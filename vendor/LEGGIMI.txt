@@ -1,0 +1,2 @@
+Libreria pdf.js (Mozilla) versione 6.2.108, licenza Apache 2.0 (vedi LICENSE-pdfjs.txt).
+Serve all'app per mostrare i fogli di servizio in PDF. Non modificare questi file.
