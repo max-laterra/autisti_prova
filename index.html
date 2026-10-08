@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- La Terra Autisti - versione 1.0.1 (collegata alla cartella Dropbox "Autisti La Terra") - 8 ottobre 2026 -->
+<!-- La Terra Autisti - versione 1.0.2 (collegata alla cartella Dropbox "Autisti La Terra") - 8 ottobre 2026 -->
 <html lang="it">
 <head>
 <meta charset="utf-8">
@@ -468,7 +468,7 @@ nav.tabs .pall{position:absolute;top:6px;left:calc(50% + 9px);min-width:19px;hei
     <div class="gate-body" id="gateChi"></div>
     <div class="gate-body" id="gatePw" hidden></div>
   </div>
-  <p class="gate-ver">La Terra Autisti · versione 1.0.1</p>
+  <p class="gate-ver">La Terra Autisti · versione 1.0.2</p>
 </div>
 <input type="file" id="fotoInput" accept="image/*" capture="environment" hidden>
 
@@ -774,8 +774,8 @@ function salvaSpesa(){
   const r={id:mod.id||nuovoId("e"),cat:mod.cat,pag:mod.pag,importo:imp,data:$("mData").value||OGGI,luogo:$("mLuogo").value.trim(),foto:mod.foto||null};
   if(mod.cat==="carburante"){const l=numero($("mLitri").value),k=numero($("mKm").value);if(l!=null)r.litri=l;if(k!=null)r.km=Math.round(k);}
   const vecchia=s.spese.righe.find(x=>x.id===r.id)||{};
-  if(mod.fotoNuova&&mod.grande&&S.dati==="reale"){r.fotoLocale=true;r.fotoPath="";const dati=mod.grande,rid=r.id;
-    fetch(dati).then(x=>x.blob()).then(b=>idbSet("foto:"+rid,b)).then(()=>programmaInvio()).catch(()=>{});}
+  if(mod.fotoNuova&&mod.grande&&S.dati==="reale"){r.fotoLocale=true;r.fotoPath="";const rid=r.id;fotoInCorso.add(rid);
+    idbSet("foto:"+rid,byteDa(mod.grande)).finally(()=>{fotoInCorso.delete(rid);programmaInvio();});}
   else{r.fotoPath=vecchia.fotoPath||"";r.fotoLocale=!!vecchia.fotoLocale;}
   const i=s.spese.righe.findIndex(x=>x.id===r.id);
   if(i>=0)s.spese.righe[i]=r;else s.spese.righe.push(r);
@@ -978,7 +978,7 @@ function renderProfilo(){
       '<p class="note" style="margin:0">La chiave resta solo su questo telefono. Non va mai scritta su GitHub.</p></div></div>')+
     (reale?"":'<div class="riq"><h4>Dati di prova</h4><div class="campi"><button class="btn ghost" data-az="ricomincia">Rimetti i dati di esempio</button></div></div>')+
     '<button class="btn ghost" data-az="esci">Esci</button>'+
-    (reale?'<p class="versione">La Terra Autisti · versione 1.0.1</p>':'<p class="versione">La Terra Autisti · versione 1.0.1 · prova<br>Nomi, clienti e importi sono inventati.</p>');
+    (reale?'<p class="versione">La Terra Autisti · versione 1.0.2</p>':'<p class="versione">La Terra Autisti · versione 1.0.2 · prova<br>Nomi, clienti e importi sono inventati.</p>');
 }
 
 /* ============ accesso: chi sei, password, resta collegato ============ */
@@ -1086,10 +1086,18 @@ function leggiCodiceDalLink(){
 }
 
 // ---- Dropbox ----
+// fetch con un tempo massimo: su iPhone una richiesta interrotta (app in secondo piano, campo che va e viene)
+// può restare appesa senza mai finire, e con lei tutti gli invii successivi
+async function fetchT(url,o,ms){
+  const ac=typeof AbortController==="function"?new AbortController():null,t=ac?setTimeout(()=>ac.abort(),ms):null;
+  try{return await fetch(url,ac?Object.assign({},o,{signal:ac.signal}):o);}
+  finally{if(t)clearTimeout(t);}
+}
+const tempoPer=(url,o)=>url.indexOf(DBX_CONT)===0&&o&&o.body&&typeof o.body!=="string"?120000:45000;
 async function token(forza){
   if(!forza&&tok&&Date.now()<tok.exp)return tok.a;
   let r;
-  try{r=await fetch(DBX_API+"/oauth2/token",{method:"POST",body:new URLSearchParams({grant_type:"refresh_token",refresh_token:conn.r,client_id:conn.k})});}
+  try{r=await fetchT(DBX_API+"/oauth2/token",{method:"POST",body:new URLSearchParams({grant_type:"refresh_token",refresh_token:conn.r,client_id:conn.k})},30000);}
   catch(_){throw {code:"rete"};}
   if(r.status===400||r.status===401)throw {code:"bloccato"}; // l'ufficio ha bloccato il telefono
   if(!r.ok)throw {code:"rete"};
@@ -1098,7 +1106,7 @@ async function token(forza){
 const argH=o=>JSON.stringify(o).replace(/[\u007f-￿]/g,c=>"\\u"+("000"+c.charCodeAt(0).toString(16)).slice(-4));
 async function chiama(url,opz,giaRiprovato){
   const t=await token();let r;
-  try{r=await fetch(url,Object.assign({},opz,{headers:Object.assign({Authorization:"Bearer "+t},opz.headers||{})}));}catch(_){throw {code:"rete"};}
+  try{r=await fetchT(url,Object.assign({},opz,{headers:Object.assign({Authorization:"Bearer "+t},opz.headers||{})}),tempoPer(url,opz));}catch(_){throw {code:"rete"};}
   if(r.status===401&&!giaRiprovato){tok=null;await token(true);return chiama(url,opz,true);}
   if(r.status===429||r.status>=500)throw {code:"rete"};
   return r;
@@ -1136,8 +1144,9 @@ async function elenca(path){
 // ---- archivio sul telefono per PDF e foto (IndexedDB) ----
 let idbP=null;
 function idb(){if(!idbP)idbP=new Promise((ok,no)=>{if(!window.indexedDB)return no(new Error("noidb"));const r=indexedDB.open("laterra-autisti",1);r.onupgradeneeded=()=>r.result.createObjectStore("kv");r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error);}).catch(e=>{idbP=null;throw e;});return idbP;}
-async function idbGet(k){try{const db=await idb();return await new Promise((ok,no)=>{const q=db.transaction("kv").objectStore("kv").get(k);q.onsuccess=()=>ok(q.result);q.onerror=()=>no(q.error);});}catch(_){return undefined;}}
-async function idbSet(k,v){try{const db=await idb();await new Promise((ok,no)=>{const t=db.transaction("kv","readwrite");t.objectStore("kv").put(v,k);t.oncomplete=()=>ok();t.onerror=()=>no(t.error);});return true;}catch(_){return false;}}
+const entro=(pr,ms)=>Promise.race([pr,new Promise((_,no)=>setTimeout(()=>no(new Error("tempo")),ms))]);
+async function idbGet(k){try{const db=await entro(idb(),6000);return await entro(new Promise((ok,no)=>{const q=db.transaction("kv").objectStore("kv").get(k);q.onsuccess=()=>ok(q.result);q.onerror=()=>no(q.error);}),6000);}catch(_){return undefined;}}
+async function idbSet(k,v){try{const db=await entro(idb(),6000);await entro(new Promise((ok,no)=>{const t=db.transaction("kv","readwrite");t.objectStore("kv").put(v,k);t.oncomplete=()=>ok();t.onerror=()=>no(t.error);}),6000);return true;}catch(_){return false;}}
 
 // ---- stato dell'autista collegato (sul telefono) ----
 function nuovoR(){return {fogli:{},ufficio:{},spese:{},speseRev:{},letti:{},inviato:{},mesi:{},recupero:{},pastiRev:{},ultimo:null};}
@@ -1215,42 +1224,61 @@ async function spostaPasti(){
   try{const resto=await elenca("/pasti");if(!resto.some(v=>v[".tag"]==="file"))await rpc("files/delete_v2",{path:"/pasti"});}catch(e){if(!(e.code==="conflitto"))throw e;}
   R.pastiSpostati=true;salvaR();
 }
+const fotoInCorso=new Set();
+function byteDa(dataUrl){const b=atob(String(dataUrl).split(",")[1]||""),u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u.buffer;}
+async function byteFoto(r){
+  let x=await idbGet("foto:"+r.id);
+  if(x&&typeof x.arrayBuffer==="function"){try{x=await entro(x.arrayBuffer(),6000);}catch(_){x=null;}} // foto salvate dalla 1.0.1
+  if(x&&x.byteLength>100)return x;
+  return r.foto&&/^data:image\/jpeg;base64,/.test(r.foto)?byteDa(r.foto):null; // si manda almeno la foto piccola
+}
 // ---- invio di quello che l'autista ha fatto ----
 let inviando=null,ancoraInvio=false,invioTimer=null;
 function programmaInvio(){clearTimeout(invioTimer);invioTimer=setTimeout(()=>{invia();},700);}
+let inviandoDal=0,giroInvio=0;
 function invia(){
   if(!conn||!R)return Promise.resolve();
-  if(inviando){ancoraInvio=true;return inviando;}
+  if(inviando&&Date.now()-inviandoDal<180000){ancoraInvio=true;return inviando;}
+  inviandoDal=Date.now();const giro=++giroInvio;
   inviando=(async()=>{
-    let fatto=false;
+    let fatto=false,primo=null;
+    const prova=async fn=>{try{if(await fn()!==false)fatto=true;}catch(e){if(e&&e.code==="bloccato")throw e;if(!primo)primo=e;}};
     try{
-      for(const c of Object.keys(R.letti)){const n=R.letti[c];if((R.inviato["letto:"+c]||0)>=n)continue;
-        await scrivi(c+"/letto_"+MIO_ID+".json",JSON.stringify({v:1,at:new Date().toISOString(),n:n,autista:conn.a}));R.inviato["letto:"+c]=n;salvaR();fatto=true;}
-      for(const c of Object.keys(R.spese)){for(const r of R.spese[c].righe){if(!r.fotoLocale||r.fotoPath)continue;
-        const blob=await idbGet("foto:"+r.id);if(!blob){r.fotoLocale=false;continue;}
-        await scrivi(c+"/scontrini/"+r.id+".jpg",blob);r.fotoPath="scontrini/"+r.id+".jpg";r.fotoLocale=false;salvaR();fatto=true;}}
+      // 1. la busta (spese, km, consegna) e "foglio aperto": sono le cose che l'ufficio aspetta
       for(const c of Object.keys(R.spese)){const f=R.fogli[c];if(!f||!f.j||!f.j.busta||f.j.ritirato)continue;
         const corpo=speseJson(c),h=impronta(corpo);if(R.inviato["spese:"+c]===h)continue;
         if(!R.speseRev[c]&&!corpo.righe.length&&corpo.kmPartenza==null&&corpo.kmRientro==null&&!corpo.note&&!corpo.consegnata)continue; // busta ancora vuota: niente da mandare
-        corpo.updatedAt=new Date().toISOString();const m=await scrivi(c+"/spese.json",JSON.stringify(corpo));
-        R.inviato["spese:"+c]=h;if(m.rev)R.speseRev[c]=m.rev;salvaR();fatto=true;}
+        await prova(async()=>{corpo.updatedAt=new Date().toISOString();const m=await scrivi(c+"/spese.json",JSON.stringify(corpo));
+          R.inviato["spese:"+c]=h;if(m.rev)R.speseRev[c]=m.rev;salvaR();});}
+      for(const c of Object.keys(R.letti)){const n=R.letti[c];if((R.inviato["letto:"+c]||0)>=n)continue;
+        await prova(async()=>{await scrivi(c+"/letto_"+MIO_ID+".json",JSON.stringify({v:1,at:new Date().toISOString(),n:n,autista:conn.a}));R.inviato["letto:"+c]=n;salvaR();});}
+      // 2. le foto degli scontrini (poi la busta si riscrive con il nome della foto)
+      let foto=false;
+      for(const c of Object.keys(R.spese)){for(const r of R.spese[c].righe){if(!r.fotoLocale||r.fotoPath||fotoInCorso.has(r.id))continue;
+        await prova(async()=>{const b=await byteFoto(r);if(!b){r.fotoLocale=false;salvaR();return false;}
+          await scrivi(c+"/scontrini/"+r.id+".jpg",new Blob([b],{type:"image/jpeg"}));r.fotoPath="scontrini/"+r.id+".jpg";r.fotoLocale=false;salvaR();foto=true;});}}
+      if(foto)ancoraInvio=true;
+      // 3. le crocette dei pasti
       for(const k of mesiDaInviare()){const corpo=pastiJson(k),h=impronta(corpo);if(R.inviato["pasti:"+k]===h)continue;
-        corpo.updatedAt=new Date().toISOString();const m=await scrivi(PASTI+MIO_ID+"/"+k+".json",JSON.stringify(corpo));
-        R.inviato["pasti:"+k]=h;if(m.rev)R.pastiRev[k]=m.rev;salvaR();fatto=true;}
-      if(fatto){R.ultimoInvio=new Date().toISOString();salvaR();ultimoErrore=null;}
+        await prova(async()=>{corpo.updatedAt=new Date().toISOString();const m=await scrivi(PASTI+MIO_ID+"/"+k+".json",JSON.stringify(corpo));
+          R.inviato["pasti:"+k]=h;if(m.rev)R.pastiRev[k]=m.rev;salvaR();});}
+      if(fatto){R.ultimoInvio=new Date().toISOString();salvaR();}
+      if(primo)throw primo;
+      ultimoErrore=null;
       if(fatto||!aggiornando)statoSync("aggiornato alle "+oraBreve(),"ok");
     }catch(e){gestisciErrore(e);}
-    finally{const di=ancoraInvio;inviando=null;ancoraInvio=false;if(di&&conn)programmaInvio();
+    finally{if(giro!==giroInvio)return;const di=ancoraInvio;inviando=null;ancoraInvio=false;if(di&&conn)programmaInvio();
       const v=document.querySelector(".view.active");if(v&&v.id==="v-profilo"&&S&&S.dati==="reale")renderProfilo();}
   })();
   return inviando;
 }
 
 // ---- lettura di quello che manda l'ufficio ----
-let aggiornando=null,telefonoScritto=false;
+let aggiornando=null,aggiornandoDal=0,giroAgg=0,telefonoScritto=false;
 function aggiorna(){
   if(!conn||!R)return Promise.resolve();
-  if(aggiornando)return aggiornando;
+  if(aggiornando&&Date.now()-aggiornandoDal<240000)return aggiornando;
+  aggiornandoDal=Date.now();const giro=++giroAgg;
   aggiornando=(async()=>{
     statoSync("aggiorno…","via");
     try{
@@ -1290,7 +1318,7 @@ function aggiorna(){
       await invia();
       statoSync("aggiornato alle "+oraBreve(),"ok");
     }catch(e){gestisciErrore(e);}
-    finally{aggiornando=null;}
+    finally{if(giro===giroAgg)aggiornando=null;}
   })();
   return aggiornando;
 }
