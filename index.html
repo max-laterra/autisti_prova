@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- La Terra Autisti - versione 1.3 (collegata alla cartella Dropbox "Autisti La Terra") - 23 ottobre 2026 -->
+<!-- La Terra Autisti - versione 1.4 (collegata alla cartella Dropbox "Autisti La Terra") - 27 ottobre 2026 -->
 <html lang="it">
 <head>
 <meta charset="utf-8">
@@ -116,6 +116,15 @@ h3.sez:first-of-type{margin-top:6px}
 .serv.nuovo{border:2.5px solid var(--rosso);padding-top:0;overflow:hidden;box-shadow:0 6px 22px color-mix(in srgb,var(--rosso) 22%,transparent)}
 .fascia{margin:0 -15px 13px;background:var(--rosso);color:#fff;font-weight:700;font-size:.92rem;letter-spacing:.07em;text-transform:uppercase;padding:10px 15px;text-align:center}
 .mini{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:9px 12px;margin-bottom:8px;min-height:64px}
+.mini-g{margin-bottom:8px}
+.mini-g .mini{margin-bottom:0;border-bottom-left-radius:0;border-bottom-right-radius:0}
+.mini-bu{display:flex;align-items:center;gap:8px;width:100%;text-align:left;background:color-mix(in srgb,var(--ambra-fondo) 9%,var(--card));border:1px solid var(--line);border-top:0;border-radius:0 0 14px 14px;padding:9px 12px 9px 72px;min-height:46px;font-weight:600;font-size:.95rem;color:var(--ink)}
+.mini-bu .due{display:flex;flex-direction:column;min-width:0}
+.mini-bu .due b{font-weight:600;white-space:nowrap}
+.mini-bu small{font-weight:500;font-size:.82rem;color:var(--ink-soft);white-space:nowrap}
+.mini-bu .fr{margin-left:auto;font-size:1.3rem;line-height:1;color:var(--ink-soft)}
+.mini-bu:active{background:color-mix(in srgb,var(--ambra-fondo) 18%,var(--card))}
+.basso-busta{margin-top:12px}
 .mini:active{background:color-mix(in srgb,var(--ink) 5%,var(--card))}
 .mini .md{flex:0 0 48px;text-align:center;border-right:1px solid var(--line);padding-right:10px}
 .mini .md b{display:block;font-size:1.2rem;font-weight:700;line-height:1.1}
@@ -230,6 +239,14 @@ h3.sez:first-of-type{margin-top:6px}
 .campo > span{display:block;font-size:.88rem;color:var(--ink-soft);margin-bottom:5px}
 .campo input,.campo textarea{width:100%;background:var(--paper);border:1.5px solid var(--line-strong);border-radius:11px;padding:12px;min-height:52px;font-size:1.05rem}
 .campo textarea{min-height:96px;resize:vertical;line-height:1.4}
+.bus-t{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:10px;font-weight:600;font-size:.95rem;border-top:1px solid var(--line);padding-top:10px;margin-top:2px}
+.bus-t:first-child{border-top:0;padding-top:0;margin-top:0}
+.bus-t small{font-weight:500;color:var(--ink-soft)}
+.bus-t button{font:inherit;font-size:.85rem;font-weight:500;color:var(--danger);text-decoration:underline;padding:6px 0}
+.campo.largo{grid-column:1/-1}
+input[data-cb="bus"]{text-transform:uppercase}
+.bus-t+.campo,.bus-t{margin-bottom:-2px}
+.btn.cambio{grid-column:1/-1;min-height:48px;font-size:.98rem}
 .totkm{grid-column:1/-1;display:flex;justify-content:space-between;font-size:.95rem;color:var(--ink-soft);padding-top:2px}
 .totkm b{color:var(--ink)}
 .consegnata{display:flex;align-items:center;gap:9px;justify-content:center;font-weight:600;color:var(--accent);min-height:58px}
@@ -487,7 +504,7 @@ nav.tabs .pall{position:absolute;top:6px;left:calc(50% + 9px);min-width:19px;hei
     <div class="gate-body" id="gateChi"></div>
     <div class="gate-body" id="gatePw" hidden></div>
   </div>
-  <p class="gate-ver">La Terra Autisti · versione 1.3</p>
+  <p class="gate-ver">La Terra Autisti · versione 1.4</p>
 </div>
 <input type="file" id="fotoInput" accept="image/*" capture="environment" hidden>
 
@@ -628,7 +645,11 @@ const totContanti=s=>somma(s,r=>r.pag!=="carta");
 const totCarta=s=>somma(s,r=>r.pag==="carta");
 const rimanenza=s=>Math.round(((Number(s.acconto)||0)-totContanti(s))*100)/100;
 const fase=s=>OGGI<s.dal?"prossimo":OGGI>(s.al||s.dal)?"concluso":"corso";
-function kmFatti(s){const a=numero(s.spese.kmPartenza),b=numero(s.spese.kmRientro);return a!=null&&b!=null&&b>=a?b-a:null;}
+// km di un tratto (un bus); dalla 1.4 i km totali sono la somma dei bus usati nel tour
+const kmTratto=(a,b)=>{a=numero(a);b=numero(b);return a!=null&&b!=null&&b>=a?b-a:null;};
+function trattiBus(s){return [{bus:s.mezzo||"",kmInizio:s.spese.kmPartenza,kmFine:s.spese.kmRientro}].concat(s.spese.cambi||[]);}
+function kmFatti(s){let tot=null;trattiBus(s).forEach(t=>{const k=kmTratto(t.kmInizio,t.kmFine);if(k!=null)tot=(tot||0)+k;});return tot;}
+function kmMancanti(s){return trattiBus(s).some(t=>numero(t.kmFine)==null);}
 
 /* ============ elenco servizi ============ */
 const icoFoglio='<svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/><path d="M9 12h6M9 16h4"/></svg>';
@@ -658,7 +679,7 @@ function schedaServizio(s,cosa){
     '<div class="sv-date">'+periodo(s.dal,s.al)+(s.dal===(s.al||s.dal)&&s.ora?", ore "+esc(s.ora):"")+'</div>'+
     '<div class="sv-cli">'+esc(s.cliente)+'</div><div class="sv-iti">'+esc(s.itinerario)+'</div>'+
     '<div class="sv-mezzo">'+esc(s.mezzo)+' · foglio n. '+esc(s.foglio)+'</div>'+
-    '<div class="sv-btn"><button class="btn" data-foglio="'+s.id+'">'+icoFoglio+'Apri il foglio di servizio</button>'+(s.busta&&f==="corso"?btnBusta(s):"")+'</div></div>';
+    '<div class="sv-btn"><button class="btn" data-foglio="'+s.id+'">'+icoFoglio+'Apri il foglio di servizio</button>'+(s.busta?btnBusta(s):"")+'</div></div>'; // dalla 1.4: la busta si apre sempre, anche prima della partenza
 }
 function schedaBusta(s){
   return '<div class="serv"><div class="sv-alto"><span class="tipo" style="--tc:var(--t-'+s.tipo+')">'+TIPI[s.tipo]+'</span><span class="stato da">Busta da consegnare</span></div>'+
@@ -667,6 +688,9 @@ function schedaBusta(s){
 function traQuanto(g){const n=Math.round((dOf(g)-dOf(OGGI))/864e5);return n<=1?"Domani":"Tra "+n+" giorni";}
 function schedaMini(s){
   const d=dOf(s.dal);
+  if(s.busta)return '<div class="mini-g"><button class="mini" data-foglio="'+s.id+'"><span class="md"><b>'+d.getDate()+'</b><i>'+MS[d.getMonth()]+'</i></span>'+
+    '<span class="mt"><b>'+esc(s.cliente)+'</b><i>'+TIPI[s.tipo]+(s.ora?" · ore "+esc(s.ora):"")+' · '+esc(s.dest)+'</i></span><span class="fr">›</span></button>'+
+    '<button class="mini-bu" data-busta="'+s.id+'"><span class="due"><b>Busta spese n. '+esc(s.busta)+'</b><small>'+(s.spese.consegnata?"consegnata all'ufficio":"restano "+eur(rimanenza(s)))+'</small></span><span class="fr">›</span></button></div>';
   return '<button class="mini" data-foglio="'+s.id+'"><span class="md"><b>'+d.getDate()+'</b><i>'+MS[d.getMonth()]+'</i></span>'+
     '<span class="mt"><b>'+esc(s.cliente)+'</b><i>'+TIPI[s.tipo]+(s.ora?" · ore "+esc(s.ora):"")+' · '+esc(s.dest)+'</i></span><span class="fr">›</span></button>';
 }
@@ -709,13 +733,18 @@ function renderVista(inCima){
     const f=S.dati==="reale"?null:FOGLI[s.id];
     if(S.dati==="reale")mostraPdf(s);else $("vistaDentro").innerHTML=f?'<img class="pagina" id="pagina" alt="Foglio di servizio n. '+esc(s.foglio)+' – '+esc(s.cliente)+'" width="'+f.w+'" height="'+f.h+'" src="'+f.src+'">':'<div class="empty-state"><b>Foglio non ancora arrivato</b>Riprova tra poco.</div>';
     // sotto il foglio del servizio di oggi ci sono direttamente le due crocette dei pasti
-    const copre=OGGI>=s.dal&&OGGI<=(s.al||s.dal);
-    $("vistaBasso").innerHTML=copre?htmlCrociFoglio():"";$("vistaBasso").parentElement.hidden=!copre;
+    const h=htmlBassoFoglio(s);
+    $("vistaBasso").innerHTML=h;$("vistaBasso").parentElement.hidden=!h;
     aggZoom();
   }else{$("vistaDentro").innerHTML=htmlSpese(s);$("vistaBasso").innerHTML=bassoSpese(s);$("vistaBasso").parentElement.hidden=false;}
   corpo.scrollTop=inCima?0:y;if(inCima)corpo.scrollLeft=0;
 }
 function aggZoom(){if(aperto)document.querySelectorAll("#vistaDentro .pagina").forEach(x=>{x.style.width=ZOOM[aperto.zoom]+"%";});}
+// sotto il foglio: le crocette di oggi (se il foglio copre oggi) e, dalla 1.4, la busta del servizio
+function htmlBassoFoglio(s){
+  const copre=OGGI>=s.dal&&OGGI<=(s.al||s.dal);
+  return (copre?htmlCrociFoglio():"")+(s.busta?'<div class="'+(copre?"basso-busta":"")+'">'+btnBusta(s)+'</div>':"");
+}
 function htmlCrociFoglio(){
   if(aRiposo(OGGI))return msgRiposo;
   const r=segni(OGGI);
@@ -750,11 +779,25 @@ function htmlSpese(s){
   con.forEach(c=>{
     h+='<div class="riq" style="--cc:var('+CAT[c].c+')"><div class="cat-t"><i></i><b>'+CAT[c].n+'</b><span>'+eur(totCat(s,c))+'</span></div>'+s.spese.righe.filter(r=>r.cat===c).sort((a,b)=>(a.data||"")<(b.data||"")?-1:1).map(r=>rigaSpesa(r,bl)).join("")+'</div>';
   });
-  const km=kmFatti(s),dis=bl?" disabled":"";
-  h+='<div class="riq"><h4>Chilometri</h4><div class="campi due">'+
-    '<label class="campo"><span>Alla partenza</span><input id="kmPartenza" inputmode="numeric" autocomplete="off" placeholder="km" value="'+esc(s.spese.kmPartenza)+'"'+dis+'></label>'+
-    '<label class="campo"><span>Al rientro</span><input id="kmRientro" inputmode="numeric" autocomplete="off" placeholder="km" value="'+esc(s.spese.kmRientro)+'"'+dis+'></label>'+
-    '<div class="totkm"><span>Totale km effettuati</span><b id="kmTot">'+(km==null?"—":intero(km)+" km")+'</b></div></div></div>';
+  const km=kmFatti(s),dis=bl?" disabled":"",cambi=s.spese.cambi||[];
+  h+='<div class="riq"><h4>Chilometri</h4><div class="campi due">';
+  if(!cambi.length){
+    h+='<label class="campo"><span>Alla partenza</span><input id="kmPartenza" inputmode="numeric" autocomplete="off" placeholder="km" value="'+esc(s.spese.kmPartenza)+'"'+dis+'></label>'+
+      '<label class="campo"><span>Al rientro</span><input id="kmRientro" inputmode="numeric" autocomplete="off" placeholder="km" value="'+esc(s.spese.kmRientro)+'"'+dis+'></label>';
+  }else{
+    // dalla 1.4: cambio bus durante il tour, km di inizio e fine per ogni bus
+    h+='<div class="bus-t"><span>Bus 1 <small>'+esc(s.mezzo||"del foglio di servizio")+'</small></span></div>'+
+      '<label class="campo"><span>Km all\'inizio</span><input id="kmPartenza" inputmode="numeric" autocomplete="off" placeholder="km" value="'+esc(s.spese.kmPartenza)+'"'+dis+'></label>'+
+      '<label class="campo"><span>Km alla fine</span><input id="kmRientro" inputmode="numeric" autocomplete="off" placeholder="km" value="'+esc(s.spese.kmRientro)+'"'+dis+'></label>';
+    cambi.forEach((c,i)=>{
+      h+='<div class="bus-t"><span>Bus '+(i+2)+'</span>'+(bl?"":'<button type="button" data-az="togli-bus" data-i="'+i+'">Togli</button>')+'</div>'+
+        '<label class="campo largo"><span>Targa o numero del bus</span><input data-cb="bus" data-i="'+i+'" autocomplete="off" autocapitalize="characters" placeholder="es. BY620WH" value="'+esc(c.bus||"")+'"'+dis+'></label>'+
+        '<label class="campo"><span>Km all\'inizio</span><input data-cb="kmInizio" data-i="'+i+'" inputmode="numeric" autocomplete="off" placeholder="km" value="'+esc(c.kmInizio||"")+'"'+dis+'></label>'+
+        '<label class="campo"><span>Km alla fine</span><input data-cb="kmFine" data-i="'+i+'" inputmode="numeric" autocomplete="off" placeholder="km" value="'+esc(c.kmFine||"")+'"'+dis+'></label>';
+    });
+  }
+  if(!bl&&cambi.length<5)h+='<button type="button" class="btn ghost cambio" data-az="cambio-bus">'+(cambi.length?"+ Un altro cambio bus":"+ Cambio bus durante il tour")+'</button>';
+  h+='<div class="totkm"><span>Totale km effettuati'+(cambi.length?" (tutti i bus)":"")+'</span><b id="kmTot">'+(km==null?"—":intero(km)+" km")+'</b></div></div></div>';
   h+='<div class="riq"><h4>Note e segnalazioni</h4><div class="campi"><label class="campo"><textarea id="noteBusta" aria-label="Note e segnalazioni" placeholder="Guasti, ritardi, cose da dire all\'ufficio"'+dis+'>'+esc(s.spese.note)+'</textarea></label></div></div>';
   h+='<div class="riq"><h4>Intestazione per la fattura</h4><div class="intest"><b>'+INTEST.nome+'</b><br>Partita Iva '+INTEST.piva+'<br>Codice univoco '+INTEST.sdi+'<br>'+INTEST.ind+'</div></div>';
   return h;
@@ -771,7 +814,7 @@ function chiudiSheet(){$("sheet").classList.remove("open");$("scrim").classList.
 function apriModulo(s,riga,stato){
   const r=riga||{};
   mod={sid:s.id,id:r.id||null,cat:r.cat||"pasti",pag:r.pag||"contanti",foto:r.foto||null,stato:stato||"mano",giro:(mod&&mod.giro)||0,toccato:{}};
-  const def=OGGI>=s.dal&&OGGI<=(s.al||s.dal)?OGGI:s.dal;
+  const def=OGGI; // dalla 1.4: sempre oggi, anche prima della partenza
   apriSheet('<div class="grab"></div><h3 id="sheetTit">'+(r.id?"Modifica la spesa":"Nuova spesa")+'</h3><p class="who">'+esc(s.cliente)+' · busta n. '+esc(s.busta)+'</p>'+
     '<div class="corpo"><div id="mLett"></div>'+
     '<div class="campo"><span>Che spesa è</span><div class="chips" id="mCat">'+ORDINE.map(c=>'<button type="button" data-cat="'+c+'" style="--cc:var('+CAT[c].c+')">'+CAT[c].u+'</button>').join("")+'</div></div>'+
@@ -976,7 +1019,7 @@ function toccaCasella(g,col){
   }
   if(Object.keys(m).length)G[g]=m;else delete G[g];
   salva();renderMese();aggPromemoria();
-  if(aperto&&aperto.cosa==="foglio")$("vistaBasso").innerHTML=htmlCrociFoglio(); // le crocette sotto il foglio aperto
+  if(aperto&&aperto.cosa==="foglio"){const so=serv(aperto.id);if(so)$("vistaBasso").innerHTML=htmlBassoFoglio(so);} // le crocette (e la busta) sotto il foglio aperto
 }
 // oggi è "segnato" quando nella riga c'è almeno una X
 const oggiSegnato=()=>{const r=segni(OGGI);return !!(r.po||r.pl);};
@@ -1035,7 +1078,7 @@ function renderProfilo(){
       '<p class="note" style="margin:0">La chiave resta solo su questo telefono. Non va mai scritta su GitHub.</p></div></div>')+
     (reale?"":'<div class="riq"><h4>Dati di prova</h4><div class="campi"><button class="btn ghost" data-az="ricomincia">Rimetti i dati di esempio</button></div></div>')+
     '<button class="btn ghost" data-az="esci">Esci</button>'+
-    (reale?'<p class="versione">La Terra Autisti · versione 1.3</p>':'<p class="versione">La Terra Autisti · versione 1.3 · prova<br>Nomi, clienti e importi sono inventati.</p>');
+    (reale?'<p class="versione">La Terra Autisti · versione 1.4</p>':'<p class="versione">La Terra Autisti · versione 1.4 · prova<br>Nomi, clienti e importi sono inventati.</p>');
 }
 
 /* ============ accesso: chi sei, password, resta collegato ============ */
@@ -1245,7 +1288,19 @@ function speseJson(c){
         nota:nota,foto:r.fotoPath||"",autista:chi};
       if(mod)o.modificataDa=mod;
       if(r.litri!=null)o.litri=r.litri;if(r.km!=null)o.km=r.km;return o;}),
-    kmPartenza:nn(sp.kmPartenza),kmRientro:nn(sp.kmRientro),note:sp.note||"",consegnata:!!sp.consegnata,consegnataAt:sp.consegnata||""};
+    kmPartenza:nn(sp.kmPartenza),kmRientro:nn(sp.kmRientro),note:noteConBus(c,sp),consegnata:!!sp.consegnata,consegnataAt:sp.consegnata||"",
+    ...(sp.cambi&&sp.cambi.length?{bus:busJson(c,sp),kmTotali:kmTotJson(c,sp)}:{})};
+}
+const SEGNO_BUS="\n\n— Cambio bus (scritto dall'app) —";
+function mezzoDi(c){const m=(R.fogli[c]&&R.fogli[c].j&&R.fogli[c].j.mezzo)||{};return [m.nome,m.targa].filter(Boolean).join(" · ");}
+function busJson(c,sp){const nn=v=>{const x=numero(v);return x==null?null:Math.round(x);};
+  return [{n:1,mezzo:mezzoDi(c),kmPartenza:nn(sp.kmPartenza),kmRientro:nn(sp.kmRientro)}].concat((sp.cambi||[]).map((x,i)=>({n:i+2,mezzo:String(x.bus||""),kmPartenza:nn(x.kmInizio),kmRientro:nn(x.kmFine)})));}
+function kmTotJson(c,sp){let t=null;busJson(c,sp).forEach(b=>{if(b.kmPartenza!=null&&b.kmRientro!=null&&b.kmRientro>=b.kmPartenza)t=(t||0)+b.kmRientro-b.kmPartenza;});return t;}
+function noteConBus(c,sp){
+  const base=String(sp.note||"");if(!(sp.cambi&&sp.cambi.length))return base;
+  const r=busJson(c,sp).map(b=>"Bus "+b.n+(b.mezzo?" ("+b.mezzo+")":"")+": km "+(b.kmPartenza==null?"?":intero(b.kmPartenza))+" → "+(b.kmRientro==null?"?":intero(b.kmRientro))+(b.kmPartenza!=null&&b.kmRientro!=null&&b.kmRientro>=b.kmPartenza?" = "+intero(b.kmRientro-b.kmPartenza)+" km":""));
+  const t=kmTotJson(c,sp);
+  return (base+SEGNO_BUS+"\n"+r.join("\n")+(t!=null?"\nTotale: "+intero(t)+" km":"")).slice(0,1990);
 }
 function daSpeseJson(j,loc){
   const vecchie={};((loc&&loc.righe)||[]).forEach(r=>{vecchie[r.id]=r;});
@@ -1254,7 +1309,8 @@ function daSpeseJson(j,loc){
         litri:r.litri!=null&&isFinite(Number(r.litri))?Number(r.litri):v.litri,km:r.km!=null&&isFinite(Number(r.km))?Number(r.km):v.km,
         foto:v.foto||null,fotoPath:String(r.foto||""),fotoLocale:!!v.fotoLocale&&!r.foto,
         autista:String(r.autista||v.autista||j.autista||"").slice(0,80),modificata:String(r.modificataDa||v.modificata||"").slice(0,80)};}),
-    kmPartenza:j.kmPartenza==null?"":String(j.kmPartenza),kmRientro:j.kmRientro==null?"":String(j.kmRientro),note:String(j.note||""),
+    kmPartenza:j.kmPartenza==null?"":String(j.kmPartenza),kmRientro:j.kmRientro==null?"":String(j.kmRientro),note:String(j.note||"").split(SEGNO_BUS)[0],
+    cambi:(Array.isArray(j.bus)?j.bus:[]).filter(b=>b&&Number(b.n)>=2).sort((a,b)=>a.n-b.n).slice(0,5).map(b=>({bus:String(b.mezzo||"").slice(0,30),kmInizio:b.kmPartenza==null?"":String(b.kmPartenza),kmFine:b.kmRientro==null?"":String(b.kmRientro)})),
     consegnata:j.consegnata&&j.consegnataAt?String(j.consegnataAt):null};
 }
 function mesiDaInviare(){const k=new Set(Object.keys(R.mesi));Object.keys(R.recupero||{}).forEach(d=>k.add(d.slice(0,7)));return [...k].filter(x=>/^\d{4}-\d\d$/.test(x));}
@@ -1714,14 +1770,20 @@ document.addEventListener("click",e=>{
     case "salva-ieri":return salvaIeri();
     case "foto":$("fotoInput").value="";return $("fotoInput").click();
     case "mano":return apriModulo(serv(aperto.id),null,"mano");
+    case "cambio-bus":{const s=serv(aperto.id);if(!s||s.spese.consegnata)return;
+      const prima=!(s.spese.cambi||[]).length;s.spese.cambi=(s.spese.cambi||[]).concat([{bus:"",kmInizio:"",kmFine:""}]);salva();renderVista(false);
+      toast(prima?"Scrivi i km di fine del Bus 1 e i dati del Bus 2":"Aggiunto il Bus "+(s.spese.cambi.length+1));
+      setTimeout(()=>{const x=document.querySelector('[data-cb="bus"][data-i="'+(s.spese.cambi.length-1)+'"]');if(x)x.focus();},150);return;}
+    case "togli-bus":{const s=serv(aperto.id),i=+el.dataset.i;if(!s||!s.spese.cambi)return;
+      return chiedi("Togliere il Bus "+(i+2)+"?","Si cancellano la targa e i km di questo bus.","Togli","Annulla",()=>{s.spese.cambi.splice(i,1);salva();renderVista(false);});}
     case "salva-spesa":return salvaSpesa();
     case "elimina-spesa":{const s=serv(mod.sid),id=mod.id;return chiedi("Eliminare questa spesa?","La togli dalla busta. La foto dello scontrino viene eliminata.","Elimina","Annulla",()=>{s.spese.righe=s.spese.righe.filter(x=>x.id!==id);delete fotoGrandi[id];salva();chiudiSheet();renderVista();toast("Spesa eliminata");});}
     case "salva-chiave":{const v=$("chiaveIn").value.trim();if(!v){toast("Incolla prima la chiave");return;}
       try{localStorage.setItem(CHIAVE_AI,v);}catch(_){toast("Questo telefono non permette di salvarla");return;}
       renderProfilo();return toast("Chiave salvata: la lettura è attiva");}
     case "togli-chiave":try{localStorage.removeItem(CHIAVE_AI);}catch(_){}renderProfilo();return toast("Chiave tolta");
-    case "consegna":{const s=serv(aperto.id),n=s.spese.righe.length,manca=numero(s.spese.kmRientro)==null;
-      return chiedi("Consegnare la busta n. "+s.busta+"?",(n?n+(n===1?" spesa":" spese")+" per "+eur(totContanti(s)+totCarta(s)):"Nessuna spesa segnata")+". Rimanenza in busta: <b>"+eur(rimanenza(s))+"</b>."+(manca?"<br><br><b>Mancano i km al rientro.</b> Puoi consegnare lo stesso.":"")+"<br><br>Dopo la consegna non potrai più modificarla.","Consegna","Non ancora",()=>{s.spese.consegnata=new Date().toISOString();salva();renderVista();toast("Consegnata all'ufficio");});}
+    case "consegna":{const s=serv(aperto.id),n=s.spese.righe.length,manca=kmMancanti(s);
+      return chiedi("Consegnare la busta n. "+s.busta+"?",(n?n+(n===1?" spesa":" spese")+" per "+eur(totContanti(s)+totCarta(s)):"Nessuna spesa segnata")+". Rimanenza in busta: <b>"+eur(rimanenza(s))+"</b>."+(manca?"<br><br><b>Mancano dei km "+((s.spese.cambi||[]).length?"di fine di qualche bus":"al rientro")+".</b> Puoi consegnare lo stesso.":"")+"<br><br>Dopo la consegna non potrai più modificarla.","Consegna","Non ancora",()=>{s.spese.consegnata=new Date().toISOString();salva();renderVista();toast("Consegnata all'ufficio");});}
     case "ricomincia":return chiedi("Rimettere i dati di esempio?","Le spese e le crocette che hai aggiunto in questa prova vengono cancellate.","Rimetti","Annulla",()=>{S=esempio(S.dati);salva();vai("servizi");toast("Dati di esempio ripristinati");setTimeout(chiediIeri,900);});
     case "esci":return chiedi("Vuoi uscire?","Per rientrare dovrai scrivere di nuovo la password.","Esci","Annulla",esci);
     case "gate-entra":return provaAccesso();
@@ -1753,7 +1815,9 @@ $("vistaCorpo").addEventListener("dblclick",e=>{if(aperto&&aperto.cosa==="foglio
 // km e note: si salvano mentre scrivi, senza ridisegnare (il cursore resta dov'è)
 $("vistaCorpo").addEventListener("input",e=>{
   if(!aperto)return;const s=serv(aperto.id),id=e.target.id;
-  if(id==="kmPartenza"||id==="kmRientro"){s.spese[id]=e.target.value.trim();const k=kmFatti(s);$("kmTot").textContent=k==null?"—":intero(k)+" km";salva();}
+  const cb=e.target.dataset&&e.target.dataset.cb;
+  if(cb&&s.spese.cambi&&s.spese.cambi[+e.target.dataset.i]){const v=cb==="bus"?e.target.value.toUpperCase().slice(0,30):e.target.value.trim();s.spese.cambi[+e.target.dataset.i][cb]=v;const k=kmFatti(s);$("kmTot").textContent=k==null?"—":intero(k)+" km";salva();}
+  else if(id==="kmPartenza"||id==="kmRientro"){s.spese[id]=e.target.value.trim();const k=kmFatti(s);$("kmTot").textContent=k==null?"—":intero(k)+" km";salva();}
   else if(id==="noteBusta"){s.spese.note=e.target.value;salva();}
 });
 document.addEventListener("keydown",e=>{if(e.key!=="Escape")return;if($("modale").classList.contains("open"))chiudiModale();else if($("sheet").classList.contains("open"))chiudiSheet();else if(aperto)chiudiVista();});
