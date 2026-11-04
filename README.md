@@ -1,6 +1,6 @@
 # La Terra Autisti – App dell'autista
 
-**Versione 1.5** — 4 novembre 2026
+**Versione 1.7** — 4 novembre 2026
 
 Il numero di versione è scritto anche nell'app, in fondo alla pagina **Profilo**:
 serve a controllare quale versione è arrivata sul telefono dopo un aggiornamento.
@@ -22,12 +22,55 @@ Vanno caricati tutti nella radice del repository **autisti_prova** su GitHub
 | `README.md` | Questo file. |
 
 Dopo il caricamento: sul telefono chiudi del tutto l'app, aspetta 10 minuti e
-riaprila. In fondo al Profilo deve esserci «versione 1.5».
+riaprila. In fondo al Profilo deve esserci «versione 1.7».
 
 **Insieme a questa versione va aggiornato il servizio delle notifiche su
-Cloudflare alla versione 1.2** (file a parte, da NON mettere su GitHub): senza
+Cloudflare alla versione 1.4** (file a parte, da NON mettere su GitHub): senza
 quell'aggiornamento l'app funziona, ma le schermate di riposo e rimessa non
-compaiono.
+compaiono e non arrivano le notifiche di riposo e rimessa.
+
+---
+
+## Modifiche della versione 1.7
+
+### Il riposo compensativo è un riposo come gli altri
+Per l'autista non c'è più differenza tra riposo e riposo compensativo:
+- **una sola animazione per il riposo**: la casetta, con «MARIO DOMANI RELAX»
+  e sotto «Domani sei a riposo» (tolta l'animazione dell'amaca e la frase
+  «ti aspetta un altro po' di riposo»);
+- la parola «compensativo» non compare più da nessuna parte nell'app
+  dell'autista: riquadro in Servizi «Domani relax» / «Oggi relax», crocette del
+  tour «riposo»;
+- nella prova con i dati di esempio restano due pulsanti: Riposo e Rimessa.
+
+Servizio notifiche su Cloudflare: **versione 1.4** – anche nelle notifiche il
+compensativo è «🏡 Giorno di riposo … sei a riposo. Relax!»; se l'ufficio
+cambia un riposo in compensativo (o il contrario) non parte nessuna notifica,
+perché per l'autista non cambia niente.
+
+---
+
+## Modifiche della versione 1.6
+
+### L'animazione parte solo per il giorno dopo
+Per non creare confusione:
+- **domani** riposo, riposo compensativo o rimessa → all'apertura dell'app parte
+  l'animazione a tutto schermo («MARIO DOMANI RELAX», «MARIO DOMANI IN
+  RIMESSA», «MARIO TI ASPETTA UN ALTRO PO' DI RIPOSO»);
+- **oggi** riposo, riposo compensativo o rimessa → **nessuna animazione**: c'è
+  solo il riquadro in cima a Servizi («Oggi in rimessa», «Oggi relax»…), che
+  non si apre;
+- oggi e domani tutti e due → riquadro «Oggi in rimessa · domani in rimessa» e
+  animazione solo per domani; toccando il riquadro si rivede l'animazione di
+  domani;
+- tolta dall'animazione la riga «E domani: …».
+
+Prove: 35 controlli sulle schermate di riposo e rimessa (compresi «solo oggi»,
+«oggi e domani», riposo segnato con l'app aperta), più le prove di busta,
+crocette e collegamento con le Presenze: tutte superate.
+
+Servizio notifiche su Cloudflare: versione 1.3 (notifiche quando l'ufficio
+segna, cambia o toglie un riposo, un compensativo o una rimessa).
 
 ---
 
@@ -47,7 +90,7 @@ un'animazione, il giorno prima e il giorno stesso:
 - Compare **ogni volta che l'autista apre l'app**, quando la riapre dopo almeno
   5 minuti in un'altra app, e subito se l'ufficio segna il giorno mentre l'app è
   aperta. Si chiude con «Va bene» o toccando lo schermo.
-- Se oggi è rimessa e domani riposo, si vede oggi con la riga «E domani: relax».
+- (1.5) Se oggi è rimessa e domani riposo, si vedeva oggi con la riga «E domani: relax» — cambiato nella 1.6.
 - In cima a **Servizi** resta un riquadro («Domani relax», «Domani in
   rimessa»…) che riapre l'animazione.
 - Nelle crocette del tour quel giorno è scritto «riposo», «riposo
