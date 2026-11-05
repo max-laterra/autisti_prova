@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- La Terra Autisti - versione 1.7 (collegata alla cartella Dropbox "Autisti La Terra") - 4 novembre 2026 -->
+<!-- La Terra Autisti - versione 1.9 (collegata alla cartella Dropbox "Autisti La Terra") - 5 novembre 2026 -->
 <html lang="it">
 <head>
 <meta charset="utf-8">
@@ -124,8 +124,92 @@ button{cursor:pointer;background:none;border:none;padding:0;-webkit-tap-highligh
 .rx-chiave{transform-box:fill-box;transform-origin:50% 0;animation:rx-dondola 2.6s ease-in-out infinite}
 .rx-faro{animation:rx-faro 1.2s ease-in-out infinite}
 @keyframes rx-faro{0%,100%{opacity:.25}50%{opacity:1}}
+/* ============ 1.9: scene a tema (stagioni del riposo e feste) ============ */
+.sc-RM{--g1:#1C2731;--g2:#2F4152;--g3:#55697C}
+.sc-inverno{--g1:#141F48;--g2:#2C2F6B;--g3:#7E8FC0}
+.sc-primavera{--g1:#5FB6EA;--g2:#A8DDF5;--g3:#FFF1D0}
+.sc-estate,.sc-ferragosto{--g1:#0B5F8C;--g2:#1C8EC2;--g3:#57C2E3}
+.sc-autunno{--g1:#3B2A4A;--g2:#9C4A3A;--g3:#F2A65A}
+.sc-natale{--g1:#0B1A3A;--g2:#1F3E73;--g3:#3A5F9A}
+.sc-stefano{--g1:#21183F;--g2:#6E3F6C;--g3:#D08A5C}
+.sc-silvestro,.sc-capodanno{--g1:#070B1F;--g2:#1A2150;--g3:#3B2E6E}
+.sc-befana{--g1:#0F0B26;--g2:#2A2160;--g3:#5A4A9A}
+.sc-pasqua{--g1:#6CC0EE;--g2:#BFE9F8;--g3:#EAF8DC}
+.sc-sangiorgio{--g1:#0E0A1F;--g2:#2B1442;--g3:#6A2240}
+.relax.sc{background:linear-gradient(180deg,var(--g1) 0%,var(--g2) 55%,var(--g3) 100%)}
+.rx-card.sc{background:linear-gradient(120deg,var(--g1),var(--g2) 60%,var(--g3))}
+.relax.chiaro,.rx-card.chiaro{color:#14213A}
+.relax.chiaro .rx-tit{text-shadow:0 2px 14px rgba(255,255,255,.7)}
+.relax.chiaro .rx-tit .gr{color:#C2410C}
+.relax.chiaro .rx-ok{background:#14213A;color:#fff}
+.rx-tit .gr.lungo{font-size:1em;letter-spacing:.03em}
+.rx-tit .gr.lunghissimo{font-size:.82em;letter-spacing:.02em}
+.rx-prove-t{margin:10px 0 0;font-size:.85rem;font-weight:600;color:var(--ink-soft)}
+.rx-neve circle,.rx-coriandoli rect{animation:rx-neve var(--t) linear var(--d) infinite}
+@keyframes rx-neve{from{transform:translate(0,-20px)}to{transform:translate(var(--x),240px)}}
+.rx-fuoco{transform-box:fill-box;transform-origin:center;animation:rx-scoppio var(--t) ease-out var(--d) infinite both}
+@keyframes rx-scoppio{0%{transform:scale(.05);opacity:0}6%{opacity:1}55%{opacity:1}100%{transform:scale(1);opacity:0}}
+.rx-nuvola{animation:rx-nuvola 16s ease-in-out var(--d) infinite alternate}
+@keyframes rx-nuvola{from{transform:translateX(-40px)}to{transform:translateX(50px)}}
+.rx-fiore,.rx-pupazzo{transform-box:fill-box;transform-origin:50% 100%;animation:rx-dondola 3s ease-in-out var(--d,0s) infinite}
+.rx-farfalla{animation:rx-farfalla 9s ease-in-out var(--d) infinite}
+@keyframes rx-farfalla{0%,100%{transform:translate(0,0)}25%{transform:translate(60px,-22px)}50%{transform:translate(110px,8px)}75%{transform:translate(40px,28px)}}
+.rx-ali{transform-box:fill-box;transform-origin:center;animation:rx-ali .22s ease-in-out infinite alternate}
+@keyframes rx-ali{from{transform:scaleX(1)}to{transform:scaleX(.3)}}
+.rx-foglia{transform-box:fill-box;transform-origin:center;animation:rx-foglia var(--t) linear var(--d) infinite}
+@keyframes rx-foglia{0%{transform:translate(0,-10px) rotate(0)}100%{transform:translate(var(--x),240px) rotate(540deg)}}
+.rx-lucina{animation:rx-lucina 1.4s ease-in-out infinite}
+.rx-lucina.l1{fill:#FF4D5E}.rx-lucina.l2{fill:#FFD23F;animation-delay:.45s}.rx-lucina.l3{fill:#5BC0FF;animation-delay:.9s}
+@keyframes rx-lucina{0%,100%{opacity:1}50%{opacity:.25}}
+.rx-stella{transform-box:fill-box;transform-origin:center;animation:rx-stella 3s ease-in-out infinite}
+@keyframes rx-stella{0%,100%{transform:scale(1) rotate(0)}50%{transform:scale(1.18) rotate(18deg)}}
+.rx-alone{transform-box:fill-box;transform-origin:center;animation:rx-alone 2.4s ease-in-out infinite}
+@keyframes rx-alone{0%,100%{transform:scale(.8);opacity:.25}50%{transform:scale(1.3);opacity:.6}}
+.rx-regalo,.rx-albero-n{transform-box:fill-box;transform-origin:50% 100%;animation:rx-pop .7s cubic-bezier(.2,.9,.3,1.4) var(--d,.1s) both}
+.rx-cometa{animation:rx-cometa 3s cubic-bezier(.2,.8,.3,1) .3s both}
+@keyframes rx-cometa{from{transform:translate(-170px,40px);opacity:0}20%{opacity:1}to{transform:none;opacity:1}}
+.rx-minuti,.rx-ore{transform-box:fill-box;transform-origin:50% 100%}
+.rx-minuti{animation:rx-minuti 3s cubic-bezier(.3,.7,.3,1) .3s both}
+@keyframes rx-minuti{from{transform:rotate(-150deg)}to{transform:rotate(0)}}
+.rx-ore{animation:rx-ore 3s cubic-bezier(.3,.7,.3,1) .3s both}
+@keyframes rx-ore{from{transform:rotate(-12deg)}to{transform:rotate(0)}}
+.rx-calice{transform-box:fill-box;transform-origin:50% 100%}
+.rx-calice.sx{animation:rx-cin-sx 2.4s ease-in-out .6s infinite}
+.rx-calice.dx{animation:rx-cin-dx 2.4s ease-in-out .6s infinite}
+@keyframes rx-cin-sx{0%,100%{transform:rotate(-6deg)}40%,55%{transform:rotate(14deg)}}
+@keyframes rx-cin-dx{0%,100%{transform:rotate(6deg)}40%,55%{transform:rotate(-14deg)}}
+.rx-tintinnio{transform-box:fill-box;transform-origin:center;animation:rx-tin 2.4s ease-in-out .6s infinite}
+@keyframes rx-tin{0%,38%{transform:scale(0);opacity:0}46%{transform:scale(1.4);opacity:1}62%,100%{transform:scale(0);opacity:0}}
+.rx-bolla{animation:rx-bolla 1.6s ease-in infinite}.rx-bolla.b2{animation-delay:.7s}
+@keyframes rx-bolla{from{transform:translateY(0);opacity:1}to{transform:translateY(-16px);opacity:0}}
+.rx-befana{transform:translateX(150px);animation:rx-befana 8s linear infinite}
+@keyframes rx-befana{from{transform:translateX(-80px)}to{transform:translateX(420px)}}
+.rx-dondolo{animation:rx-bob 1.2s ease-in-out infinite alternate}
+@keyframes rx-bob{from{transform:translateY(-4px)}to{transform:translateY(4px)}}
+.rx-calza,.rx-band{transform-box:fill-box;transform-origin:50% 0;animation:rx-dondola 2.4s ease-in-out var(--d) infinite}
+.rx-uovo{transform-box:fill-box;transform-origin:50% 100%;animation:rx-traballa 1.2s ease-in-out .3s 2}
+@keyframes rx-traballa{0%,100%{transform:rotate(0)}25%{transform:rotate(-6deg)}75%{transform:rotate(6deg)}}
+.rx-guscio{transform-box:fill-box;transform-origin:0% 100%;transform:translate(-30px,-26px) rotate(-28deg);animation:rx-guscio 1s cubic-bezier(.3,1.4,.5,1) 2.7s both}
+@keyframes rx-guscio{from{transform:none}to{transform:translate(-30px,-26px) rotate(-28deg)}}
+.rx-pulcino{animation:rx-pulcino .8s cubic-bezier(.3,1.5,.5,1) 3s both}
+@keyframes rx-pulcino{from{transform:translateY(46px)}to{transform:none}}
+.rx-colomba{animation:rx-colomba 9s linear infinite}
+@keyframes rx-colomba{from{transform:translateX(-60px)}to{transform:translateX(380px)}}
+.rx-ala{transform-box:fill-box;transform-origin:0% 100%;animation:rx-batt .35s ease-in-out infinite alternate}
+@keyframes rx-batt{from{transform:scaleY(1)}to{transform:scaleY(-.6)}}
+.rx-ombrellone{transform-box:fill-box;transform-origin:50% 100%;animation:rx-dondola 4s ease-in-out infinite}
+.rx-pallone{animation:rx-rimbalzo .55s cubic-bezier(.5,0,.5,1) infinite alternate}
+@keyframes rx-rimbalzo{from{transform:translateY(0)}to{transform:translateY(-34px)}}
+.rx-onde{animation:rx-onde 5s linear infinite}
+@keyframes rx-onde{to{transform:translateX(-80px)}}
+.rx-amaca{transform-box:view-box;transform-origin:157px 100px;animation:rx-amaca 3.4s ease-in-out infinite}
+@keyframes rx-amaca{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
+.rx-foglie{transform-box:fill-box;transform-origin:50% 60%;animation:rx-dondola 3s ease-in-out infinite}
+.rx-raggi{transform-box:fill-box;transform-origin:center;animation:rx-gira 14s linear infinite}
+.rx-gabbiano{animation:rx-vola 9s linear infinite}
+@keyframes rx-vola{from{transform:translate(-40px,0)}50%{transform:translate(170px,-14px)}to{transform:translate(380px,4px)}}
 /* riquadro in cima a Servizi */
-.rx-card{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:0;border-radius:16px;padding:12px 14px;margin:2px 0 16px;color:#fff;font:inherit;
+.rx-card{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:0;border-radius:16px;padding:12px 14px;margin:2px 0 10px;color:#fff;font:inherit;
   background:linear-gradient(120deg,#2C2F6B,#8E4E73 70%,#E58A5C);box-shadow:var(--shadow)}
 .rx-card.rx-c-RM{background:linear-gradient(120deg,#1C2731,#2F4152 60%,#55697C)}
 .rx-card .ic{font-size:2rem;line-height:1;animation:rx-dondola 2.4s ease-in-out infinite;display:block}
@@ -555,7 +639,7 @@ nav.tabs .pall{position:absolute;top:6px;left:calc(50% + 9px);min-width:19px;hei
     <div class="gate-body" id="gateChi"></div>
     <div class="gate-body" id="gatePw" hidden></div>
   </div>
-  <p class="gate-ver">La Terra Autisti · versione 1.7</p>
+  <p class="gate-ver">La Terra Autisti · versione 1.9</p>
 </div>
 <input type="file" id="fotoInput" accept="image/*" capture="environment" hidden>
 
@@ -755,7 +839,8 @@ function renderServizi(){
   const oggiVuoto=!g.oggi.length&&!g.nuovi.some(s=>fase(s)==="corso");
   // quando oggi non c'è niente, il prossimo servizio resta grande ed evidenziato; gli altri piccoli sotto
   const primo=oggiVuoto&&g.prossimi.length?g.prossimi[0]:null,altri=primo?g.prossimi.slice(1):g.prossimi;
-  h+='<h3 class="sez">Oggi</h3>'+(g.oggi.length?g.oggi.map(s=>schedaServizio(s,"oggi")).join(""):oggiVuoto?(primo||g.nuovi.length?'<div class="empty-state" style="margin-bottom:14px;padding:14px"><b>Oggi nessun servizio</b></div>':'<div class="empty-state" style="margin-bottom:14px"><b>Oggi nessun servizio</b>Quando l\'ufficio ti manda un foglio lo vedi qui in grande.</div>'):"");
+  // dalla 1.8: a riposo o in rimessa oggi, senza servizi, la sezione «Oggi – nessun servizio» non serve (c'è già il riquadro in cima)
+  if(g.oggi.length||!tipoFermo(OGGI))h+='<h3 class="sez">Oggi</h3>'+(g.oggi.length?g.oggi.map(s=>schedaServizio(s,"oggi")).join(""):oggiVuoto?(primo||g.nuovi.length?'<div class="empty-state" style="margin-bottom:14px;padding:14px"><b>Oggi nessun servizio</b></div>':'<div class="empty-state" style="margin-bottom:14px"><b>Oggi nessun servizio</b>Quando l\'ufficio ti manda un foglio lo vedi qui in grande.</div>'):"");
   if(g.buste.length)h+=g.buste.map(schedaBusta).join("");
   if(primo)h+='<h3 class="sez">Prossimo servizio</h3>'+schedaServizio(primo,"prossimo");
   if(altri.length)h+='<h3 class="sez">'+(primo?"Altri giorni":"Prossimi giorni")+'</h3>'+altri.map(schedaMini).join("");
@@ -1093,11 +1178,14 @@ const chiaveFermo=f=>f?f.t+"|"+f.g+"|"+(f.poi||""):"";
 function etichettaFermo(g){const t=tipoFermo(g);return t==="RI"?"riposo":t==="RM"?"in rimessa":"niente crocette (presenze)";}
 function titoloCard(f){const q=f.q==="OGGI"?"Oggi":"Domani";return f.t==="RI"?q+" relax":q+" in rimessa";}
 function htmlCardFermo(){
-  const o=tipoFermo(OGGI),d=tipoFermo(DOMANI);if(!o&&!d)return "";
-  // oggi: solo il riquadro, non si apre niente; domani: il riquadro riapre l'animazione
-  const f=o?{t:o,g:OGGI,q:"OGGI"}:{t:d,g:DOMANI,q:"DOMANI"},apre=!!d;
-  const dentro='<span class="ic" aria-hidden="true">'+FERMI[f.t].ic+'</span><span><b>'+titoloCard(f)+'</b><small>'+esc(maiusc(gLungo(f.g)))+(o&&d?' · domani '+FERMI[d].breve:'')+'</small></span>'+(apre?'<span class="fr">›</span>':'');
-  return apre?'<button class="rx-card rx-c-'+f.t+'" data-az="relax-apri">'+dentro+'</button>':'<div class="rx-card rx-c-'+f.t+'" role="status">'+dentro+'</div>';
+  // dalla 1.8: oggi e domani sono due riquadri separati; oggi senza data e senza freccia (non si apre), domani con la data e riapre l'animazione
+  // dalla 1.9: in cima il riquadro degli auguri nei giorni di festa; i riposi hanno i colori della stagione (o della festa)
+  const o=tipoFermo(OGGI),d=tipoFermo(DOMANI),fe=S&&S.dati==="reale"?festaDi(OGGI):null;let h="";
+  const stile=(t,g)=>{if(t!=="RI")return {cls:"rx-c-"+t,ic:FERMI[t].ic};const sc=scenaRiposoDi(g);return {cls:"sc sc-"+sc.k+(SCENE_CHIARE[sc.k]?" chiaro":""),ic:sc.festa?sc.festa.ic:IC_STAGIONE[sc.k]};};
+  if(fe)h+='<button class="rx-card sc sc-'+fe.k+(SCENE_CHIARE[fe.k]?" chiaro":"")+'" data-az="festa-apri"><span class="ic" aria-hidden="true">'+fe.ic+'</span><span><b>'+esc(fe.card)+'</b><small>Tanti auguri da La Terra</small></span><span class="fr">›</span></button>';
+  if(o){const st=stile(o,OGGI);h+='<div class="rx-card '+st.cls+'" role="status"><span class="ic" aria-hidden="true">'+st.ic+'</span><span><b>'+titoloCard({t:o,q:"OGGI"})+'</b></span></div>';}
+  if(d){const st=stile(d,DOMANI);h+='<button class="rx-card '+st.cls+'" data-az="relax-apri"><span class="ic" aria-hidden="true">'+st.ic+'</span><span><b>'+titoloCard({t:d,q:"DOMANI"})+'</b><small>'+esc(maiusc(gLungo(DOMANI)))+'</small></span><span class="fr">›</span></button>';}
+  return h;
 }
 const scenaRI='<svg viewBox="0 0 320 220" aria-hidden="true">'+
   '<g class="rx-stelle" fill="#FFF6D8"><circle cx="40" cy="30" r="2.2"/><circle cx="92" cy="58" r="1.6"/><circle cx="150" cy="22" r="2"/><circle cx="206" cy="44" r="1.5"/><circle cx="300" cy="96" r="1.8"/><circle cx="24" cy="92" r="1.5"/><circle cx="118" cy="96" r="1.3"/></g>'+
@@ -1138,20 +1226,210 @@ const scenaRM='<svg viewBox="0 0 320 220" aria-hidden="true">'+
   busPiccolo+
   '<g opacity=".9"><path d="M30 186 V150 l10 -6 l10 6 V186" fill="#55697C"/><rect x="36" y="160" width="8" height="10" fill="#FFD27F"/></g>'+
 '</svg>';
+/* ============ 1.9: feste e riposo che cambia con le stagioni ============
+   Feste (prima apertura del giorno, poi un riquadro di auguri in cima a Servizi):
+   25/12 Natale, 26/12 Santo Stefano, 31/12 San Silvestro, 1/1 Capodanno, 6/1 Befana, Pasqua (calcolata), 15/8 Ferragosto, San Giorgio.
+   Riposo: scena dell'inverno, della primavera, dell'estate o dell'autunno secondo il giorno del riposo;
+   se il riposo cade in una festa, la scena è quella della festa. */
+const SAN_GIORGIO="04-23"; // San Giorgio (festa liturgica); per la festa di Ragusa Ibla si può mettere un'altra data
+function pasquaDi(a){const b=a%19,c=Math.floor(a/100),d=a%100,e=Math.floor(c/4),f=c%4,g=Math.floor((c+8)/25),h=Math.floor((c-g+1)/3),i=(19*b+c-e-h+15)%30,k=Math.floor(d/4),l=d%4,m=(32+2*f+2*k-i-l)%7,n=Math.floor((b+11*i+22*m)/451),mese=Math.floor((i+m-7*n+114)/31),gg=((i+m-7*n+114)%31)+1;return a+"-"+String(mese).padStart(2,"0")+"-"+String(gg).padStart(2,"0");}
+const FESTE={
+  natale:{ic:"🎄",righe:["BUON","NATALE"],card:"Buon Natale!",nome:"Natale"},
+  stefano:{ic:"⭐",righe:["BUON","SANTO STEFANO"],card:"Buon Santo Stefano!",nome:"Santo Stefano"},
+  silvestro:{ic:"🥂",righe:["BUONA FINE","E BUON INIZIO"],card:"Buona fine e buon inizio!",nome:"San Silvestro"},
+  capodanno:{ic:"🎆",righe:["BUON ANNO",""],card:"Buon anno!",nome:"Capodanno"},
+  befana:{ic:"🧹",righe:["BUONA","BEFANA"],card:"Buona Befana!",nome:"Epifania"},
+  pasqua:{ic:"🐣",righe:["BUONA","PASQUA"],card:"Buona Pasqua!",nome:"Pasqua"},
+  ferragosto:{ic:"🍉",righe:["BUON","FERRAGOSTO"],card:"Buon Ferragosto!",nome:"Ferragosto"},
+  sangiorgio:{ic:"🎇",righe:["BUONA FESTA DI","SAN GIORGIO"],card:"Buona festa di San Giorgio!",nome:"San Giorgio"}
+};
+function festaDi(g){
+  const md=g.slice(5);
+  const k=md==="12-25"?"natale":md==="12-26"?"stefano":md==="12-31"?"silvestro":md==="01-01"?"capodanno":md==="01-06"?"befana":md==="08-15"?"ferragosto":md===SAN_GIORGIO?"sangiorgio":g===pasquaDi(+g.slice(0,4))?"pasqua":null;
+  return k?Object.assign({k},FESTE[k]):null;
+}
+const stagioneDi=g=>{const m=+g.slice(5,7);return m===12||m<=2?"inverno":m<=5?"primavera":m<=8?"estate":"autunno";};
+
+/* ---------- pezzi che si ripetono ---------- */
+function caso(seme){let s=seme;return ()=>{s=(s*9301+49297)%233280;return s/233280;};}
+function neve(n,seme){const r=caso(seme||7);let h='<g class="rx-neve" fill="#fff">';for(let i=0;i<n;i++)h+='<circle cx="'+(r()*360-20).toFixed(0)+'" cy="0" r="'+(1+r()*2.2).toFixed(1)+'" style="--d:-'+(r()*6).toFixed(2)+'s;--t:'+(4+r()*4).toFixed(2)+'s;--x:'+(r()*30-15).toFixed(0)+'px" opacity="'+(0.6+r()*0.4).toFixed(2)+'"/>';return h+'</g>';}
+function stelleCielo(n,seme,max){const r=caso(seme||3);let h='<g class="rx-stelle" fill="#FFF6D8">';for(let i=0;i<n;i++)h+='<circle cx="'+(r()*320).toFixed(0)+'" cy="'+(r()*(max||110)).toFixed(0)+'" r="'+(0.8+r()*1.4).toFixed(1)+'"/>';return h+'</g>';}
+function fuoco(x,y,col,rag,d,t){let raggi="";for(let i=0;i<14;i++){const a=i*Math.PI/7,c=Math.cos(a),s=Math.sin(a);raggi+='<path d="M'+(c*rag*0.25).toFixed(1)+' '+(s*rag*0.25).toFixed(1)+'L'+(c*rag).toFixed(1)+' '+(s*rag).toFixed(1)+'"/><circle cx="'+(c*rag*1.08).toFixed(1)+'" cy="'+(s*rag*1.08).toFixed(1)+'" r="1.6"/>';}
+  return '<g transform="translate('+x+' '+y+')"><g class="rx-fuoco" style="--d:'+d+'s;--t:'+(t||3.2)+'s" stroke="'+col+'" fill="'+col+'" stroke-width="1.8" stroke-linecap="round">'+raggi+'<circle r="3" fill="#fff" stroke="none"/></g></g>';}
+const sole=(x,y,r)=>'<g transform="translate('+x+' '+y+')"><g class="rx-raggi" stroke="#FFD95A" stroke-width="4.5" stroke-linecap="round"><path d="M0 -'+(r+16)+' V-'+(r+8)+' M0 '+(r+8)+' V'+(r+16)+' M-'+(r+16)+' 0 H-'+(r+8)+' M'+(r+8)+' 0 H'+(r+16)+' M-'+(r*0.85+8)+' -'+(r*0.85+8)+' l5 5 M'+(r*0.85+3)+' '+(r*0.85+3)+' l5 5 M-'+(r*0.85+8)+' '+(r*0.85+8)+' l5 -5 M'+(r*0.85+3)+' -'+(r*0.85+3)+' l5 -5"/></g><circle r="'+r+'" fill="#FFC93C"/></g>';
+const nuvola=(x,y,s,d)=>'<g class="rx-nuvola" style="--d:'+d+'s"><g transform="translate('+x+' '+y+') scale('+s+')" fill="#fff" opacity=".92"><circle cx="0" cy="0" r="12"/><circle cx="14" cy="-6" r="15"/><circle cx="30" cy="0" r="11"/><rect x="-6" y="0" width="42" height="10" rx="5"/></g></g>';
+const mare=()=>'<g class="rx-onde"><path d="M-320 150 q20 -9 40 0'+' t40 0'.repeat(23)+' V184 H-320Z" fill="#1574A6"/><path d="M-320 160 q20 -7 40 0'+' t40 0'.repeat(23)+' V188 H-320Z" fill="#2C93C9" opacity=".9"/></g><path d="M-320 184 L0 182 Q160 166 320 184 L640 186 V220 H-320Z" fill="#F2D29B"/>';
+const gabbiano=(y,d)=>'<g class="rx-gabbiano" style="animation-delay:'+d+'s" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><path d="M0 '+y+' q7 -7 14 0 q7 -7 14 0"/></g>';
+// la casetta del riposo (sera o giorno); "extra" va sopra la casa
+function casetta(o){
+  const fin=o.giorno?"#BFE3F5":"#FFD27F",tetto=o.tetto||"#C2410C";
+  return '<g class="rx-casa">'+
+    '<g class="rx-fumo" fill="'+(o.giorno?"#fff":"#E9E4F2")+'"><circle cx="196" cy="56" r="7"/><circle cx="196" cy="56" r="7"/><circle cx="196" cy="56" r="7"/></g>'+
+    '<rect x="186" y="62" width="20" height="40" fill="#8B3A2E"/><rect x="183" y="58" width="26" height="8" rx="2" fill="#6E2C22"/>'+
+    '<rect x="98" y="110" width="136" height="80" fill="#F4E9D8"/><rect x="98" y="110" width="136" height="9" fill="#E3D3BC"/>'+
+    '<path d="M84 116 L166 52 L248 116 Z" fill="'+tetto+'"/><path d="M84 116 L166 52 L248 116" fill="none" stroke="#8E2A1D" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>'+
+    (o.neve?'<path d="M86 114 L166 54 L246 114" fill="none" stroke="#fff" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"/><path d="M183 59 h26" stroke="#fff" stroke-width="5" stroke-linecap="round"/>':'')+
+    '<circle cx="166" cy="92" r="9" fill="'+fin+'"'+(o.giorno?'':' class="rx-luce"')+'/>'+
+    '<rect x="150" y="144" width="32" height="46" rx="4" fill="#7A4A2A"/><circle cx="175" cy="168" r="2.4" fill="#F2C14E"/>'+
+    '<rect x="110" y="130" width="30" height="28" rx="3" fill="'+fin+'"'+(o.giorno?'':' class="rx-luce"')+'/><path d="M125 130 V158 M110 144 H140" stroke="#C98A12" stroke-width="2.5"/>'+
+    '<rect x="194" y="130" width="30" height="28" rx="3" fill="'+fin+'"'+(o.giorno?'':' class="rx-luce"')+'/><path d="M209 130 V158 M194 144 H224" stroke="#C98A12" stroke-width="2.5"/>'+
+    '<path d="M108 158 h34 M192 158 h34" stroke="#C2410C" stroke-width="4" stroke-linecap="round"/>'+
+    '<path d="M150 190 h32" stroke="#C9B79C" stroke-width="5"/>'+(o.extra||'')+
+  '</g>';
+}
+const alberello=(x,y,col,col2)=>'<g class="rx-albero"><rect x="'+(x-4)+'" y="'+y+'" width="9" height="'+(190-y)+'" rx="3" fill="#5A3A22"/><circle cx="'+x+'" cy="'+(y-10)+'" r="22" fill="'+col+'"/><circle cx="'+(x-12)+'" cy="'+y+'" r="13" fill="'+col2+'"/><circle cx="'+(x+13)+'" cy="'+(y-2)+'" r="12" fill="'+col2+'"/></g>';
+const zzz='<g class="rx-z"><text x="112" y="126">z</text><text x="104" y="118">z</text><text x="94" y="108">Z</text></g>';
+
+/* ---------- riposo: le quattro stagioni ---------- */
+const scenaInverno=()=>'<svg viewBox="0 0 320 220" aria-hidden="true">'+stelleCielo(9,5,90)+
+  '<path d="M262 22 a26 26 0 1 0 16 46 a21 21 0 1 1 -16 -46z" fill="#FFE7A8"/>'+
+  '<path d="M-320 189 L0 188 Q90 168 170 180 T320 176 L640 178 V220 H-320Z" fill="#E6EDF5"/>'+
+  '<g class="rx-albero"><path d="M272 186 L248 186 L272 120 L296 186 Z" fill="#1E5E44"/><path d="M272 132 l-14 30 h28z" fill="#fff" opacity=".85"/></g>'+
+  '<g class="rx-pupazzo"><circle cx="48" cy="176" r="15" fill="#fff"/><circle cx="48" cy="152" r="10" fill="#fff"/><circle cx="45" cy="150" r="1.4" fill="#222"/><circle cx="51" cy="150" r="1.4" fill="#222"/><path d="M48 153 l7 2 -7 1z" fill="#F07F1A"/><rect x="40" y="139" width="16" height="4" fill="#2B2B2B"/><rect x="43" y="129" width="10" height="11" fill="#2B2B2B"/><path d="M38 160 h20" stroke="#C0262D" stroke-width="3"/></g>'+
+  casetta({neve:true})+zzz+neve(26,11)+'</svg>';
+const scenaPrimavera=()=>'<svg viewBox="0 0 320 220" aria-hidden="true">'+sole(52,46,20)+nuvola(200,40,1,0)+nuvola(40,90,.7,-6)+
+  '<path d="M-320 189 L0 188 Q90 168 170 180 T320 176 L640 178 V220 H-320Z" fill="#6DBE5B"/>'+
+  alberello(274,146,"#F4A6C6","#F7C3D9")+casetta({giorno:true})+
+  '<g class="rx-fiori">'+[[36,"#E8553D"],[56,"#F2C14E"],[76,"#B07CE0"],[250,"#E8553D"],[296,"#F2C14E"]].map((f,i)=>'<g class="rx-fiore" style="--d:'+(-i*0.6)+'s"><path d="M'+f[0]+' 200 V182" stroke="#3E8E3A" stroke-width="2.5"/><circle cx="'+f[0]+'" cy="178" r="6" fill="'+f[1]+'"/><circle cx="'+f[0]+'" cy="178" r="2.4" fill="#FFF3C4"/></g>').join("")+'</g>'+
+  '<g class="rx-farfalla" style="--d:0s"><g transform="translate(70 120)"><path class="rx-ali" d="M0 0 C-10 -12 -16 2 0 4 C16 2 10 -12 0 0Z" fill="#F07F1A"/></g></g>'+
+  '<g class="rx-farfalla" style="--d:-3s"><g transform="translate(240 90)"><path class="rx-ali" d="M0 0 C-9 -11 -14 2 0 4 C14 2 9 -11 0 0Z" fill="#5BA8E8"/></g></g></svg>';
+const scenaEstate=()=>'<svg viewBox="0 0 320 220" aria-hidden="true">'+sole(158,46,22)+gabbiano(40,0)+mare()+
+  '<path d="M66 192 Q60 140 84 96" fill="none" stroke="#8A5A2B" stroke-width="10" stroke-linecap="round"/>'+
+  '<g class="rx-foglie" fill="#2F8F5B"><path d="M84 96 q-34 -22 -54 2 q26 -8 54 -2z"/><path d="M84 96 q-20 -34 -48 -30 q26 6 48 30z"/><path d="M84 96 q14 -36 44 -30 q-28 4 -44 30z"/><path d="M84 96 q34 -14 52 8 q-26 -10 -52 -8z"/><path d="M84 96 q-4 -36 14 -48 q-6 22 -14 48z"/></g>'+
+  '<path d="M250 192 Q256 140 232 98" fill="none" stroke="#8A5A2B" stroke-width="10" stroke-linecap="round"/>'+
+  '<g class="rx-foglie" fill="#2F8F5B"><path d="M232 98 q34 -22 54 2 q-26 -8 -54 -2z"/><path d="M232 98 q20 -34 48 -30 q-26 6 -48 30z"/><path d="M232 98 q-14 -36 -44 -30 q28 4 44 30z"/><path d="M232 98 q-34 -14 -52 8 q26 -10 52 -8z"/></g>'+
+  '<g class="rx-amaca"><path d="M84 112 L112 130 M230 112 L204 130" stroke="#6B4A2A" stroke-width="2.5"/>'+
+  '<circle cx="128" cy="128" r="9" fill="#F1C7A3"/><path d="M118 125 q10 -10 20 0z" fill="#E8553D"/><rect x="123" y="126" width="11" height="3" rx="1.5" fill="#1D2931"/>'+
+  '<path d="M136 136 Q160 150 194 132" fill="none" stroke="#3B5BA9" stroke-width="12" stroke-linecap="round"/>'+
+  '<path d="M110 130 Q157 170 206 130" fill="none" stroke="#E8553D" stroke-width="9" stroke-linecap="round"/>'+
+  '<path d="M116 138 Q157 166 200 138" fill="none" stroke="#FFD27F" stroke-width="2.5" stroke-dasharray="6 6"/></g></svg>';
+const foglieCadono=(n,seme)=>{const r=caso(seme);const col=["#E8742A","#C2410C","#F2A93B","#B5542E"];let h='<g class="rx-autunno">';for(let i=0;i<n;i++)h+='<g class="rx-foglia" style="--d:-'+(r()*7).toFixed(2)+'s;--t:'+(5+r()*3).toFixed(2)+'s;--x:'+(r()*60-30).toFixed(0)+'px"><path transform="translate('+(r()*320).toFixed(0)+' 0)" d="M0 -5 C4 -3 4 3 0 5 C-4 3 -4 -3 0 -5Z" fill="'+col[i%4]+'"/></g>';return h+'</g>';};
+const scenaAutunno=()=>'<svg viewBox="0 0 320 220" aria-hidden="true">'+
+  '<circle cx="262" cy="56" r="20" fill="#FFB35C" opacity=".85"/>'+nuvola(60,40,.9,-2)+
+  '<path d="M-320 189 L0 188 Q90 168 170 180 T320 176 L640 178 V220 H-320Z" fill="#7A5A2E"/>'+
+  alberello(274,146,"#E8742A","#F2A93B")+alberello(41,160,"#C2410C","#E8742A")+casetta({})+
+  '<g fill="#E8742A"><path d="M60 196 c4 -3 8 -3 10 0 c-3 2 -7 2 -10 0z"/><path d="M236 194 c4 -3 8 -3 10 0 c-3 2 -7 2 -10 0z"/><path d="M120 198 c4 -3 8 -3 10 0 c-3 2 -7 2 -10 0z" fill="#C2410C"/></g>'+
+  zzz+foglieCadono(14,23)+'</svg>';
+
+/* ---------- le feste ---------- */
+const scenaNatale=()=>{const luci=[[150,84,"l1"],[172,96,"l2"],[138,104,"l3"],[160,114,"l1"],[188,124,"l2"],[124,136,"l3"],[150,142,"l2"],[176,148,"l1"],[200,158,"l3"],[112,166,"l1"],[140,172,"l3"],[168,176,"l2"],[208,176,"l1"]];
+  return '<svg viewBox="0 0 320 220" aria-hidden="true">'+stelleCielo(12,9,100)+
+  '<path d="M-320 190 Q160 168 640 190 V220 H-320Z" fill="#E8EEF7"/>'+
+  '<rect x="152" y="176" width="16" height="16" fill="#6B4423"/>'+
+  '<g class="rx-albero-n"><polygon points="160,58 116,118 204,118" fill="#1F7A4D"/><polygon points="160,86 104,152 216,152" fill="#23874F"/><polygon points="160,116 94,182 226,182" fill="#1F7A4D"/>'+
+  '<path d="M126 108 Q160 124 196 106 M112 144 Q160 164 208 142 M102 174 Q160 192 218 172" fill="none" stroke="#F2C14E" stroke-width="2.5"/>'+
+  luci.map(l=>'<circle class="rx-lucina '+l[2]+'" cx="'+l[0]+'" cy="'+l[1]+'" r="3.4"/>').join("")+'</g>'+
+  '<circle class="rx-alone" cx="160" cy="52" r="11" fill="#FFF3C4" opacity=".25"/>'+
+  '<g transform="translate(160 52)"><polygon class="rx-stella" points="0,-13 3.8,-4 13,-4 5.6,2 8.2,11 0,5.5 -8.2,11 -5.6,2 -13,-4 -3.8,-4" fill="#FFD23F" stroke="#E0A400" stroke-width="1"/></g>'+
+  '<g class="rx-regalo" style="--d:.5s"><rect x="56" y="166" width="36" height="26" rx="2" fill="#C0262D"/><rect x="71" y="166" width="6" height="26" fill="#F2C14E"/><rect x="54" y="160" width="40" height="8" rx="2" fill="#D9343F"/><path d="M74 160 q-10 -12 -14 -2 q6 4 14 2 q8 2 14 -2 q-4 -10 -14 2z" fill="#F2C14E"/></g>'+
+  '<g class="rx-regalo" style="--d:.8s"><rect x="230" y="170" width="32" height="22" rx="2" fill="#2D6FB7"/><rect x="243" y="170" width="6" height="22" fill="#fff"/><rect x="228" y="164" width="36" height="8" rx="2" fill="#3A80CC"/></g>'+
+  '<g class="rx-regalo" style="--d:1.1s"><rect x="96" y="178" width="22" height="14" rx="2" fill="#F2C14E"/><rect x="105" y="178" width="4" height="14" fill="#C0262D"/></g>'+
+  neve(24,31)+'</svg>';};
+const scenaStefano=()=>'<svg viewBox="0 0 320 220" aria-hidden="true">'+stelleCielo(14,13,120)+
+  '<g class="rx-cometa"><g transform="translate(206 44)"><path d="M0 0 L-90 -26 L-88 -18 L-60 -10 Z" fill="#FFE7A8" opacity=".55"/><path d="M0 0 L-70 4 L-50 -4Z" fill="#FFE7A8" opacity=".35"/><polygon points="0,-10 3,-3 10,-3 4.5,1.5 6.5,9 0,4.5 -6.5,9 -4.5,1.5 -10,-3 -3,-3" fill="#FFD23F"/></g></g>'+
+  '<path d="M-320 196 Q20 168 120 182 T320 172 L640 176 V220 H-320Z" fill="#2E2246"/>'+
+  '<g><ellipse class="rx-luce" cx="160" cy="180" rx="56" ry="20" fill="#FFD27F" opacity=".35"/>'+
+  '<rect x="112" y="132" width="96" height="56" fill="#3A2416"/><rect x="108" y="128" width="8" height="62" fill="#6B4423"/><rect x="204" y="128" width="8" height="62" fill="#6B4423"/>'+
+  '<path d="M96 134 L160 92 L224 134" fill="none" stroke="#7A4A2A" stroke-width="10" stroke-linejoin="round" stroke-linecap="round"/><path d="M104 134 L160 98 L216 134 Z" fill="#8B5A33"/>'+
+  '<path d="M140 170 L180 170 L174 184 L146 184 Z" fill="#A87437"/><path d="M142 170 l6 -6 M150 170 l3 -7 M160 170 l0 -7 M168 170 l-3 -7 M176 170 l-5 -6" stroke="#E8C46A" stroke-width="2"/>'+
+  '<circle class="rx-alone" cx="160" cy="166" r="11" fill="#FFF3C4" opacity=".45"/><ellipse cx="161" cy="167" rx="8" ry="4.5" fill="#fff"/><circle cx="153" cy="166" r="3.6" fill="#F1C7A3"/></g>'+
+  '<path d="M276 196 Q282 150 268 120" fill="none" stroke="#1A1230" stroke-width="7" stroke-linecap="round"/><g class="rx-foglie" fill="#1A1230"><path d="M268 120 q24 -16 40 2 q-20 -6 -40 -2z"/><path d="M268 120 q-22 -16 -38 2 q20 -6 38 -2z"/><path d="M268 120 q6 -26 22 -30 q-12 14 -22 30z"/></g></svg>';
+const citta='<path d="M-320 220 V176 H0 V168 H18 V152 H34 V168 H52 V140 Q64 112 76 140 V160 H96 V146 H108 V134 H112 V122 H116 V134 H120 V146 H134 V170 H160 V150 H182 V164 H206 V138 Q220 116 234 138 V166 H252 V150 H270 V170 H292 V156 H320 V176 H640 V220 Z" fill="#141933"/><g fill="#FFD27F" opacity=".8"><rect x="22" y="158" width="4" height="5"/><rect x="58" y="150" width="4" height="5"/><rect x="100" y="152" width="4" height="5"/><rect x="166" y="158" width="4" height="5"/><rect x="214" y="148" width="4" height="5"/><rect x="258" y="158" width="4" height="5"/><rect x="298" y="164" width="4" height="5"/></g>';
+const scenaSilvestro=()=>'<svg viewBox="0 0 320 220" aria-hidden="true">'+stelleCielo(10,17,90)+
+  fuoco(70,52,"#FF5C7A",30,.4)+fuoco(152,34,"#FFD23F",36,1.2)+fuoco(110,86,"#5BA8E8",24,2.0)+fuoco(214,60,"#7CE08A",30,2.6)+
+  citta+'<g transform="translate(272 92)"><circle r="26" fill="#F4E9D8" stroke="#C98A12" stroke-width="4"/>'+[0,1,2,3,4,5,6,7,8,9,10,11].map(i=>'<path d="M0 -21 V-17" stroke="#3A2416" stroke-width="'+(i%3?1.5:3)+'" transform="rotate('+(i*30)+')"/>').join("")+
+  '<g class="rx-ore"><path d="M0 0 V-12" stroke="#3A2416" stroke-width="3.5" stroke-linecap="round"/></g><g class="rx-minuti"><path d="M0 0 V-19" stroke="#C0262D" stroke-width="2.5" stroke-linecap="round"/></g><circle r="2.5" fill="#3A2416"/></g>'+
+  '<path d="M272 118 V176" stroke="#141933" stroke-width="10"/></svg>';
+const calice=(x,lato)=>'<g transform="translate('+x+' 128)"><g class="rx-calice '+(lato<0?"sx":"dx")+'"><path d="M-12 -30 L12 -30 L9 4 Q0 12 -9 4 Z" fill="rgba(255,255,255,.22)" stroke="#fff" stroke-width="2"/><path d="M-10.5 -18 L10.5 -18 L8.5 3 Q0 10 -8.5 3 Z" fill="#F2C14E"/><circle class="rx-bolla" cx="-3" cy="0" r="1.6" fill="#fff"/><circle class="rx-bolla b2" cx="3" cy="0" r="1.3" fill="#fff"/><path d="M0 10 V40" stroke="#fff" stroke-width="2.5"/><ellipse cx="0" cy="41" rx="12" ry="3" fill="#fff"/></g></g>';
+const scenaCapodanno=()=>'<svg viewBox="0 0 320 220" aria-hidden="true">'+stelleCielo(10,19,80)+
+  fuoco(60,46,"#FFD23F",30,0)+fuoco(150,30,"#FF5C7A",36,.7)+fuoco(250,44,"#5BA8E8",32,1.4)+fuoco(104,80,"#7CE08A",22,2.1)+fuoco(206,82,"#FFD23F",24,2.6)+
+  citta+calice(132,-1)+calice(188,1)+'<g transform="translate(160 96)"><polygon class="rx-tintinnio" points="0,-12 3,-3 12,0 3,3 0,12 -3,3 -12,0 -3,-3" fill="#FFF3C4"/></g>'+
+  '<g class="rx-coriandoli">'+(()=>{const r=caso(41);let h="";for(let i=0;i<22;i++)h+='<rect x="'+(r()*320).toFixed(0)+'" y="0" width="4" height="7" fill="'+["#FF5C7A","#FFD23F","#5BA8E8","#7CE08A"][i%4]+'" style="--d:-'+(r()*5).toFixed(2)+'s;--t:'+(3+r()*3).toFixed(2)+'s;--x:'+(r()*40-20).toFixed(0)+'px"/>';return h;})()+'</g></svg>';
+const scenaBefana=()=>'<svg viewBox="0 0 320 220" aria-hidden="true">'+stelleCielo(16,23,120)+
+  '<circle cx="196" cy="74" r="48" fill="#FFF3C4"/><circle cx="180" cy="62" r="8" fill="#F2E3A6"/><circle cx="210" cy="92" r="6" fill="#F2E3A6"/><circle cx="214" cy="58" r="4" fill="#F2E3A6"/>'+
+  '<g class="rx-befana"><g transform="translate(0 70)"><g class="rx-dondolo"><path d="M-46 10 L34 -2" stroke="#5A3A22" stroke-width="3.5" stroke-linecap="round"/><path d="M-46 10 l-16 -8 l2 6 l-6 2 l6 4 l-4 6 l18 -6z" fill="#C98A12"/>'+
+  '<path d="M-14 6 L10 3 L2 -20 L-8 -18 Z" fill="#2B2140"/><circle cx="-1" cy="-24" r="6" fill="#2B2140"/><path d="M-10 -27 h20" stroke="#2B2140" stroke-width="3" stroke-linecap="round"/><path d="M-6 -28 L6 -28 L2 -44 Z" fill="#2B2140"/><path d="M2 -44 l6 4" stroke="#2B2140" stroke-width="3" stroke-linecap="round"/>'+
+  '<circle cx="-16" cy="-8" r="8" fill="#6B4A2A"/><path d="M-20 -15 l4 -4 4 4" stroke="#6B4A2A" stroke-width="2" fill="none"/><path d="M4 -16 l10 8" stroke="#2B2140" stroke-width="3" stroke-linecap="round"/></g></g></g>'+
+  '<path d="M-320 220 V178 H40 L70 150 L100 178 H140 V164 H210 L236 140 L262 164 H320 V178 H640 V220 Z" fill="#141022"/><rect x="78" y="146" width="12" height="20" fill="#141022"/>'+
+  '<path d="M150 150 Q200 160 250 150" stroke="#8B6B4A" stroke-width="1.5" fill="none"/>'+
+  '<g class="rx-calza" style="--d:0s"><path d="M168 154 v14 q0 6 6 6 h8 v-5 h-6 v-15z" fill="#C0262D"/><rect x="167" y="152" width="9" height="4" fill="#fff"/></g>'+
+  '<g class="rx-calza" style="--d:-.8s"><path d="M196 157 v14 q0 6 6 6 h8 v-5 h-6 v-15z" fill="#2F8F5B"/><rect x="195" y="155" width="9" height="4" fill="#fff"/></g>'+
+  '<g class="rx-calza" style="--d:-1.6s"><path d="M224 154 v14 q0 6 6 6 h8 v-5 h-6 v-15z" fill="#F2C14E"/><rect x="223" y="152" width="9" height="4" fill="#fff"/></g></svg>';
+const scenaPasqua=()=>'<svg viewBox="0 0 320 220" aria-hidden="true"><defs><clipPath id="rxUovoSotto"><path d="M118.2 145 L126 137 L134 145 L142 137 L150 145 L158 137 L166 145 L174 137 L182 145 L190 137 L201.8 145 A42 54 0 1 1 118.2 145 Z"/></clipPath></defs>'+
+  sole(266,40,16)+nuvola(40,40,.8,-3)+
+  '<g class="rx-colomba"><g transform="translate(0 64)"><path d="M0 0 q14 -6 26 0 q-6 6 -26 0z" fill="#fff"/><path class="rx-ala" d="M8 -1 q6 -18 18 -18 q-4 12 -12 18z" fill="#F4F4F4"/><circle cx="26" cy="-1" r="3.5" fill="#fff"/><path d="M29 -1 l5 1 -5 1z" fill="#F2A93B"/><path d="M33 2 q8 6 14 4 M38 4 l3 -4 M42 5 l2 -4" stroke="#3E8E3A" stroke-width="1.6" fill="none"/></g></g>'+
+  '<path d="M-320 190 Q160 170 640 190 V220 H-320Z" fill="#7CC36A"/>'+
+  [[40,"#F4A6C6"],[66,"#F2C14E"],[256,"#B07CE0"],[284,"#E8553D"]].map((f,i)=>'<g class="rx-fiore" style="--d:'+(-i*0.5)+'s"><path d="M'+f[0]+' 202 V184" stroke="#3E8E3A" stroke-width="2.5"/><path d="M'+(f[0]-6)+' 182 q6 -14 12 0 q-6 6 -12 0z" fill="'+f[1]+'"/></g>').join("")+
+  '<g class="rx-uovo"><g class="rx-pulcino"><circle cx="160" cy="128" r="22" fill="#FFD93B"/><circle cx="153" cy="122" r="2.6" fill="#222"/><circle cx="167" cy="122" r="2.6" fill="#222"/><path d="M155 129 l5 6 5 -6z" fill="#F07F1A"/><path d="M156 107 q4 -8 8 0" stroke="#F2B705" stroke-width="2.5" fill="none"/></g>'+
+  '<g clip-path="url(#rxUovoSotto)"><ellipse cx="160" cy="150" rx="42" ry="54" fill="#8E5BD0"/><rect x="110" y="160" width="100" height="9" fill="#F2C14E"/><path d="M110 184 l8 -7 8 7 8 -7 8 7 8 -7 8 7 8 -7 8 7 8 -7 8 7 8 -7 8 7" stroke="#F4A6C6" stroke-width="3" fill="none"/><g fill="#fff"><circle cx="134" cy="152" r="2.5"/><circle cx="160" cy="153" r="2.5"/><circle cx="186" cy="152" r="2.5"/></g></g>'+
+  '<g class="rx-guscio"><path d="M118.2 145 L126 137 L134 145 L142 137 L150 145 L158 137 L166 145 L174 137 L182 145 L190 137 L201.8 145 A42 54 0 0 0 118.2 145 Z" fill="#8E5BD0"/><g fill="#F2C14E"><circle cx="146" cy="116" r="3"/><circle cx="174" cy="112" r="3"/><circle cx="160" cy="104" r="3"/></g><path d="M126 130 q34 -10 68 0" stroke="#F4A6C6" stroke-width="3" fill="none"/></g></g></svg>';
+const scenaFerragosto=()=>'<svg viewBox="0 0 320 220" aria-hidden="true">'+sole(268,40,20)+gabbiano(36,-2)+mare()+
+  '<g class="rx-ombrellone"><path d="M108 196 L128 96" stroke="#8B6B4A" stroke-width="4"/><path d="M70 106 Q128 50 186 98 Z" fill="#E8553D"/><path d="M90 92 Q128 50 148 96 Z M128 74 Q150 64 186 98 L168 99 Z" fill="#fff"/><path d="M70 106 Q128 50 186 98" fill="none" stroke="#C0262D" stroke-width="2"/></g>'+
+  '<rect x="64" y="186" width="70" height="12" rx="3" fill="#3B82C4" transform="rotate(-4 99 192)"/><path d="M68 188 h62 M68 193 h62" stroke="#fff" stroke-width="2" transform="rotate(-4 99 192)"/>'+
+  '<g transform="translate(196 186)"><path d="M-22 0 A22 22 0 0 0 22 0 Z" fill="#3E8E3A"/><path d="M-19 0 A19 19 0 0 0 19 0 Z" fill="#F3EBD6"/><path d="M-17 0 A17 17 0 0 0 17 0 Z" fill="#E8414F"/><g fill="#222"><ellipse cx="-8" cy="5" rx="1.2" ry="2"/><ellipse cx="0" cy="8" rx="1.2" ry="2"/><ellipse cx="8" cy="5" rx="1.2" ry="2"/></g></g>'+
+  '<g class="rx-pallone"><g transform="translate(248 0)"><circle cx="0" cy="178" r="11" fill="#fff"/><path d="M-11 178 A11 11 0 0 1 0 167 V178Z" fill="#E8553D"/><path d="M0 189 A11 11 0 0 1 11 178 H0Z" fill="#3B82C4"/></g></g>'+
+  '<g transform="translate(40 184)"><path d="M-8 0 h16 l-3 14 h-10z" fill="#F2C14E"/><path d="M-8 0 q8 -10 16 0" fill="none" stroke="#C0262D" stroke-width="1.5"/></g></svg>';
+const luminarie=(y,cols)=>{let h='<g>';const n=13;h+='<path d="M0 '+y+' Q160 '+(y+26)+' 320 '+y+'" stroke="#5A4630" stroke-width="1" fill="none"/>';for(let i=0;i<n;i++){const t=i/(n-1),x=t*320,yy=y+26*2*t*(1-t)*1;h+='<circle class="rx-lucina '+["l1","l2","l3"][i%3]+'" cx="'+x.toFixed(0)+'" cy="'+(yy+2).toFixed(0)+'" r="3" style="fill:'+cols[i%cols.length]+'"/>';}return h+'</g>';};
+const scenaSanGiorgio=()=>'<svg viewBox="0 0 320 220" aria-hidden="true">'+stelleCielo(10,29,70)+
+  fuoco(56,48,"#FF4A4A",30,.3)+fuoco(262,40,"#FFD23F",32,1.1)+fuoco(100,26,"#FFD23F",22,1.9)+fuoco(226,84,"#FF4A4A",22,2.5)+
+  '<path d="M236 112 Q236 74 214 74 Q192 74 192 112 Z" fill="#4C7BB0"/><path d="M214 74 V62" stroke="#E9D7B0" stroke-width="5"/><circle cx="214" cy="60" r="4" fill="#E9D7B0"/>'+
+  '<g fill="#E9D7B0"><rect x="104" y="112" width="112" height="78"/><rect x="122" y="84" width="76" height="30"/><rect x="140" y="58" width="40" height="28"/><path d="M144 58 L160 40 L176 58 Z"/></g>'+
+  '<path d="M160 30 V44 M154 36 H166" stroke="#E9D7B0" stroke-width="3"/>'+
+  '<g stroke="#C9B48A" stroke-width="3"><path d="M114 116 V188 M130 116 V188 M190 116 V188 M206 116 V188 M132 88 V112 M188 88 V112"/></g>'+
+  '<path d="M148 190 V160 Q160 146 172 160 V190 Z" fill="#5A3A22"/><circle class="rx-luce" cx="160" cy="96" r="8" fill="#FFD27F"/><path d="M152 70 Q160 62 168 70 V82 H152Z" fill="#3A2A1A"/>'+
+  '<path d="M84 190 H236 M78 196 H242 M72 202 H248" stroke="#C9B48A" stroke-width="4"/>'+
+  '<path d="M-320 204 H640 V220 H-320Z" fill="#241A2E"/>'+
+  '<g class="rx-bandierine"><path d="M0 118 Q80 136 160 118 Q240 136 320 118" stroke="#8B6B4A" stroke-width="1" fill="none"/>'+(()=>{let h="";for(let i=0;i<16;i++){const x=i*20+10,y=118+Math.sin((i%8)/8*Math.PI)*12;h+='<g class="rx-band" style="--d:'+(-i*0.2)+'s"><path d="M'+(x-6)+' '+y.toFixed(0)+' L'+(x+6)+' '+y.toFixed(0)+' L'+x+' '+(y+12).toFixed(0)+' Z" fill="'+(i%2?"#fff":"#D62828")+'"/>'+(i%2?'<path d="M'+x+' '+(y+1).toFixed(0)+' V'+(y+9).toFixed(0)+' M'+(x-3)+' '+(y+4).toFixed(0)+' H'+(x+3)+'" stroke="#D62828" stroke-width="1.6"/>':'')+'</g>';}return h;})()+'</g>'+
+  luminarie(150,["#FFD27F","#FF6B6B","#FFF3C4"])+'</svg>';
+const SCENE_FESTA={natale:scenaNatale,stefano:scenaStefano,silvestro:scenaSilvestro,capodanno:scenaCapodanno,befana:scenaBefana,pasqua:scenaPasqua,ferragosto:scenaFerragosto,sangiorgio:scenaSanGiorgio};
+const SCENE_STAGIONE={inverno:scenaInverno,primavera:scenaPrimavera,estate:scenaEstate,autunno:scenaAutunno};
+const SCENE_CHIARE={primavera:1,pasqua:1}; // cielo chiaro: scritte scure
+
+const FESTA_K="laterra-autisti-festa",NOMI_STAGIONE={inverno:"Inverno",primavera:"Primavera",estate:"Estate",autunno:"Autunno"},IC_STAGIONE={inverno:"☃️",primavera:"🌷",estate:"🏖️",autunno:"🍂"};
+const scenaRiposoDi=g=>{const fe=festaDi(g);return fe?{k:fe.k,festa:fe}:{k:stagioneDi(g)};};
 let fermoAperto=null,fermoVisto="",fermoDopo=null;
+// una schermata a tutto schermo (riposo, rimessa, festa): o = {k, righe, scena, sub, ok}
+function mostraScena(o,dopo){
+  const box=$("relax");if(!box.hidden)return false;
+  box.className="relax sc sc-"+o.k+(SCENE_CHIARE[o.k]?" chiaro":"");
+  box.innerHTML='<div class="rx-dentro"><h2 class="rx-tit" id="relaxT">'+o.righe.map((r,i)=>'<span class="rl'+(i===2?" gr"+(r.length>11?" lunghissimo":r.length>9?" lungo":""):"")+'" style="--i:'+i+'">'+r+'</span>').join("")+'</h2>'+
+    '<div class="rx-scena">'+o.scena+'</div><p class="rx-sub">'+o.sub+'</p><button type="button" class="rx-ok" data-az="relax-chiudi">'+(o.ok||"Va bene")+'</button></div>';
+  box.hidden=false;fermoDopo=dopo||null;
+  setTimeout(()=>{const b=box.querySelector(".rx-ok");if(b&&!box.hidden)try{b.focus({preventScroll:true});}catch(_){}},1600);
+  return true;
+}
+function mostraFesta(k,dopo,g){
+  const f=FESTE[k];if(!f)return false;g=g||OGGI;
+  const N=esc(nomeBreve().toUpperCase()),r2=k==="capodanno"?g.slice(0,4):f.righe[1];
+  return mostraScena({k,righe:[N,f.righe[0],r2],scena:SCENE_FESTA[k](),sub:"Tanti auguri da tutta La Terra<small>"+esc(maiusc(gLungo(g)))+"</small>",ok:"Grazie!"},dopo);
+}
+// la festa si vede da sola solo la prima volta che si apre l'app quel giorno
+function festaDelGiorno(dopo){
+  if(!(S&&S.dati==="reale"))return false;
+  const f=festaDi(OGGI);if(!f||leggi_ls(FESTA_K)===OGGI)return false;
+  scrivi_ls(FESTA_K,OGGI);return mostraFesta(f.k,dopo);
+}
+// all'apertura: prima la festa, poi il riposo o la rimessa di domani (poi la domanda su ieri)
+function aperturaDelGiorno(fine){
+  const dopoFesta=()=>{if(!mostraFermo(null,fine)&&fine)fine();};
+  if(!festaDelGiorno(dopoFesta))dopoFesta();
+}
+// anteprime dal Profilo (dati di prova): la data della festa di quest'anno o del prossimo
+function provaScena(k){
+  if(FESTE[k]){const a=+OGGI.slice(0,4),md={natale:"12-25",stefano:"12-26",silvestro:"12-31",capodanno:"01-01",befana:"01-06",ferragosto:"08-15",sangiorgio:SAN_GIORGIO}[k];
+    let g=k==="pasqua"?pasquaDi(a):a+"-"+md;if(g<OGGI)g=k==="pasqua"?pasquaDi(a+1):(a+1)+"-"+md;return mostraFesta(k,null,g);}
+  if(SCENE_STAGIONE[k])return mostraScena({k,righe:[esc(nomeBreve().toUpperCase()),"DOMANI","RELAX"],scena:SCENE_STAGIONE[k](),sub:"Domani sei a riposo<small>"+NOMI_STAGIONE[k]+"</small>"});
+}
+
 function mostraFermo(f,dopo){
   f=f||fermoDaMostrare();if(!f){return false;}
-  const box=$("relax");if(!box.hidden){return false;}
   const N=esc(nomeBreve().toUpperCase()),q=f.q,quando=maiusc(gLungo(f.g));
-  const righe=[N,q,f.t==="RI"?"RELAX":"IN RIMESSA"];
-  const sub=(f.t==="RI"?(q==="OGGI"?"Oggi sei a riposo":"Domani sei a riposo"):(q==="OGGI"?"Oggi sei in rimessa":"Domani sei in rimessa"))+"<small>"+esc(quando)+"</small>";
-  box.className="relax rx-"+f.t;
-  box.innerHTML='<div class="rx-dentro"><h2 class="rx-tit" id="relaxT">'+righe.map((r,i)=>'<span class="rl'+(i===2?" gr":"")+'" style="--i:'+i+'">'+r+'</span>').join("")+'</h2>'+
-    '<div class="rx-scena">'+(f.t==="RI"?scenaRI:scenaRM)+'</div>'+
-    '<p class="rx-sub">'+sub+'</p>'+(f.poi?'<p class="rx-poi">E domani: '+esc(FERMI[f.poi].breve)+'</p>':"")+
-    '<button type="button" class="rx-ok" data-az="relax-chiudi">Va bene</button></div>';
-  box.hidden=false;fermoAperto=f;fermoVisto=chiaveFermo(f);fermoDopo=dopo||null;
-  setTimeout(()=>{const b=box.querySelector(".rx-ok");if(b&&!box.hidden)try{b.focus({preventScroll:true});}catch(_){}},1600);
+  let o;
+  if(f.t==="RI"){const sc=scenaRiposoDi(f.g); // dalla 1.9: scena della stagione, o della festa se il riposo cade in una festa
+    o={k:sc.k,righe:[N,q,"RELAX"],scena:sc.festa?SCENE_FESTA[sc.k]():SCENE_STAGIONE[sc.k](),sub:(q==="OGGI"?"Oggi sei a riposo":"Domani sei a riposo")+"<small>"+esc(quando)+(sc.festa?" · "+esc(sc.festa.nome):"")+"</small>"};}
+  else o={k:"RM",righe:[N,q,"IN RIMESSA"],scena:scenaRM,sub:(q==="OGGI"?"Oggi sei in rimessa":"Domani sei in rimessa")+"<small>"+esc(quando)+"</small>"};
+  if(!mostraScena(o,dopo))return false;
+  fermoAperto=f;fermoVisto=chiaveFermo(f);
   return true;
 }
 function chiudiFermo(){
@@ -1219,9 +1497,11 @@ function renderProfilo(){
       '<button class="btn" data-az="salva-chiave">Salva la chiave</button>'+(chiaveAI()?'<button class="btn ghost" data-az="togli-chiave">Togli la chiave</button>':"")+
       '<p class="note" style="margin:0">La chiave resta solo su questo telefono. Non va mai scritta su GitHub.</p></div></div>')+
     (reale?"":'<div class="riq"><h4>Dati di prova</h4><div class="campi"><button class="btn ghost" data-az="ricomincia">Rimetti i dati di esempio</button></div></div>'+
-      '<div class="riq"><h4>Riposo e rimessa</h4><div class="intest">Così appare l\'app quando nelle presenze l\'ufficio segna per domani un riposo (anche compensativo) o la rimessa.</div><div class="campi rx-prove" style="padding-top:0"><button class="btn ghost" data-az="relax-prova" data-t="RI">Riposo</button><button class="btn ghost" data-az="relax-prova" data-t="RM">Rimessa</button></div></div>')+
+      '<div class="riq"><h4>Animazioni</h4><div class="intest">Così appare l\'app nei giorni speciali. Il riposo di domani cambia con la stagione (o con la festa, se cade in una festa); la rimessa ha il capannone. Le feste compaiono la prima volta che si apre l\'app quel giorno.</div>'+
+      '<p class="rx-prove-t">Riposo di domani</p><div class="campi rx-prove" style="padding-top:6px">'+["inverno","primavera","estate","autunno"].map(k=>'<button class="btn ghost" data-az="scena-prova" data-s="'+k+'">'+IC_STAGIONE[k]+' '+NOMI_STAGIONE[k]+'</button>').join("")+'<button class="btn ghost" data-az="relax-prova" data-t="RM">🔧 Rimessa</button></div>'+
+      '<p class="rx-prove-t">Feste</p><div class="campi rx-prove" style="padding-top:6px">'+Object.keys(FESTE).map(k=>'<button class="btn ghost" data-az="scena-prova" data-s="'+k+'">'+FESTE[k].ic+' '+FESTE[k].nome+'</button>').join("")+'</div></div>')+
     '<button class="btn ghost" data-az="esci">Esci</button>'+
-    (reale?'<p class="versione">La Terra Autisti · versione 1.7</p>':'<p class="versione">La Terra Autisti · versione 1.7 · prova<br>Nomi, clienti e importi sono inventati.</p>');
+    (reale?'<p class="versione">La Terra Autisti · versione 1.9</p>':'<p class="versione">La Terra Autisti · versione 1.9 · prova<br>Nomi, clienti e importi sono inventati.</p>');
 }
 
 /* ============ accesso: chi sei, password, resta collegato ============ */
@@ -1836,7 +2116,7 @@ function entraReale(conScena){
   const verso=/[#&]vai=mese/.test(location.hash)?"mese":"servizi";if(verso==="mese"){try{history.replaceState(null,"",location.pathname+location.search);}catch(_){}}
   gateModo="reale";S=costruisciS();if(verso==="mese")vaiCrocette();else vai(verso);
   const prima=aggiorna();
-  chiudiGate(conScena,()=>{Promise.race([prima,new Promise(ok=>setTimeout(ok,5000))]).then(()=>{if(ieriChiesto||!S||S.dati!=="reale")return;ieriChiesto=true;if(!mostraFermo(null,chiediIeri))chiediIeri();});});
+  chiudiGate(conScena,()=>{Promise.race([prima,new Promise(ok=>setTimeout(ok,5000))]).then(()=>{if(ieriChiesto||!S||S.dati!=="reale")return;ieriChiesto=true;aperturaDelGiorno(chiediIeri);});});
 }
 function bloccato(){
   const firma=conn?firmaR(conn.r):"1";homeFatto();
@@ -1913,6 +2193,8 @@ document.addEventListener("click",e=>{
     case "relax-apri":return mostraFermo();
     case "relax-chiudi":return chiudiFermo();
     case "relax-prova":return mostraFermo({t:d.t,g:DOMANI,q:"DOMANI",poi:null});
+    case "festa-apri":{const f=festaDi(OGGI);return f?mostraFesta(f.k):null;}
+    case "scena-prova":return provaScena(d.s);
     case "salva-ieri":return salvaIeri();
     case "foto":$("fotoInput").value="";return $("fotoInput").click();
     case "mano":return apriModulo(serv(aperto.id),null,"mano");

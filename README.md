@@ -1,6 +1,6 @@
 # La Terra Autisti – App dell'autista
 
-**Versione 1.7** — 4 novembre 2026
+**Versione 1.9** — 5 novembre 2026
 
 Il numero di versione è scritto anche nell'app, in fondo alla pagina **Profilo**:
 serve a controllare quale versione è arrivata sul telefono dopo un aggiornamento.
@@ -22,12 +22,74 @@ Vanno caricati tutti nella radice del repository **autisti_prova** su GitHub
 | `README.md` | Questo file. |
 
 Dopo il caricamento: sul telefono chiudi del tutto l'app, aspetta 10 minuti e
-riaprila. In fondo al Profilo deve esserci «versione 1.7».
+riaprila. In fondo al Profilo deve esserci «versione 1.9».
 
 **Insieme a questa versione va aggiornato il servizio delle notifiche su
-Cloudflare alla versione 1.4** (file a parte, da NON mettere su GitHub): senza
+Cloudflare alla versione 1.7** (file a parte, da NON mettere su GitHub): senza
 quell'aggiornamento l'app funziona, ma le schermate di riposo e rimessa non
 compaiono e non arrivano le notifiche di riposo e rimessa.
+
+---
+
+## Modifiche della versione 1.9
+
+### Il riposo cambia con le stagioni
+L'animazione del riposo di domani («MARIO DOMANI RELAX») ha una scena diversa
+secondo la stagione del giorno di riposo:
+- ☃️ **inverno** (dicembre–febbraio): casetta di notte con la neve sul tetto, fiocchi
+  che cadono, pupazzo di neve, camino che fuma;
+- 🌷 **primavera** (marzo–maggio): casetta di giorno, sole, nuvole, fiori che
+  ondeggiano, albero in fiore, farfalle;
+- 🏖️ **estate** (giugno–agosto): amaca tra le palme, mare, sole, gabbiano;
+- 🍂 **autunno** (settembre–novembre): casetta al tramonto, alberi arancioni,
+  foglie che cadono.
+Se il riposo cade in una festa, la scena è quella della festa (sotto c'è il nome
+della festa). Anche i riquadri in cima a Servizi hanno i colori della stagione.
+
+### Le feste
+La **prima volta che l'autista apre l'app** in un giorno di festa compare
+un'animazione di auguri a tutto schermo (pulsante «Grazie!»); poi in cima a
+Servizi resta il riquadro degli auguri, che la fa rivedere.
+- 25/12 **Natale** – albero con le lucine, stella, regali, neve;
+- 26/12 **Santo Stefano** – capanna illuminata e stella cometa;
+- 31/12 **San Silvestro** – «Buona fine e buon inizio», orologio che arriva a
+  mezzanotte, fuochi sulla città;
+- 1/1 **Capodanno** – «Buon anno» con l'anno nuovo, calici che brindano, fuochi,
+  coriandoli;
+- 6/1 **Befana** – la Befana sulla scopa davanti alla luna, calze appese;
+- **Pasqua** (calcolata ogni anno) – uovo che si apre con il pulcino, colomba;
+- 15/8 **Ferragosto** – ombrellone, anguria, pallone, mare;
+- **San Giorgio** (23 aprile; si cambia con la costante SAN_GIORGIO nel codice)
+  – il Duomo con i fuochi, le bandierine e le luminarie.
+Se domani è riposo o rimessa: prima la festa, poi l'animazione di domani.
+Riaprendo l'app lo stesso giorno la festa non si ripete.
+
+### Prova con i dati di esempio
+In Profilo › **Animazioni** ci sono i pulsanti per vedere tutte le scene: le 4
+stagioni del riposo, la rimessa e le 8 feste.
+
+Il servizio notifiche resta alla **versione 1.7**.
+
+---
+
+## Modifiche della versione 1.8
+
+### Oggi e domani sono due giorni distinti
+- In cima a **Servizi** ci sono due riquadri separati:
+  - **oggi** riposo o rimessa → «Oggi relax» / «Oggi in rimessa», **senza data**
+    e senza freccia (non si apre);
+  - **domani** riposo o rimessa → «Domani relax» / «Domani in rimessa» con la
+    data e la freccia: toccandolo si rivede l'animazione di domani.
+- Se oggi è riposo o rimessa e oggi non ci sono servizi, la parte «Oggi – Oggi
+  nessun servizio» non compare più (se c'è un foglio per oggi, resta).
+- L'animazione a tutto schermo resta solo per domani.
+
+### Servizio notifiche 1.7 (Cloudflare)
+- Una notifica **per ogni giorno**: con oggi rimessa e domani riposo arrivano
+  «🔧 Giorno in rimessa – …oggi…» e «🏡 Giorno di riposo – …domani…».
+- Dalla 1.5: campanelli (Dropbox per l'Agenda, Supabase per le Presenze) per le
+  notifiche in pochi secondi, lucchetto contro i doppioni, motivo dei rifiuti nel
+  registro. Dalla 1.6: Lo Buglio/Lobuglio e Cascone Saro/Rosario abbinati.
 
 ---
 
