@@ -1,6 +1,6 @@
 # La Terra Autisti – App dell'autista
 
-**Versione 1.9** — 5 novembre 2026
+**Versione 1.10** — 5 novembre 2026
 
 Il numero di versione è scritto anche nell'app, in fondo alla pagina **Profilo**:
 serve a controllare quale versione è arrivata sul telefono dopo un aggiornamento.
@@ -22,12 +22,40 @@ Vanno caricati tutti nella radice del repository **autisti_prova** su GitHub
 | `README.md` | Questo file. |
 
 Dopo il caricamento: sul telefono chiudi del tutto l'app, aspetta 10 minuti e
-riaprila. In fondo al Profilo deve esserci «versione 1.9».
+riaprila. In fondo al Profilo deve esserci «versione 1.10».
 
 **Insieme a questa versione va aggiornato il servizio delle notifiche su
 Cloudflare alla versione 1.7** (file a parte, da NON mettere su GitHub): senza
 quell'aggiornamento l'app funziona, ma le schermate di riposo e rimessa non
 compaiono e non arrivano le notifiche di riposo e rimessa.
+
+---
+
+## Modifiche della versione 1.10
+
+### Profilo più semplice per i ragazzi
+Nel Profilo dei telefoni collegati all'ufficio restano solo:
+- il nome dell'autista;
+- **Notifiche** (attivarle e scegliere l'orario dell'avviso del servizio di domani);
+- **Collegamento con l'ufficio** (fogli ricevuti, ultimo invio, «Aggiorna e invia adesso»);
+- **Intestazione per la fattura**;
+- **Esci**.
+
+### Impostazioni nascoste
+Toccando **6 volte di fila** la scritta «Profilo» (entro 4 secondi) si apre la
+pagina **Impostazioni**, con:
+- la **chiave per la lettura degli scontrini** (Gemini): salva o togli;
+- le istruzioni per l'**icona sulla schermata Home**.
+In alto «‹ Profilo» torna indietro; cambiando pagina le Impostazioni si
+richiudono. Con meno tocchi, o troppo lenti, non succede niente e non compare
+nessun avviso. Il pulsante «Metti l'app sulla schermata Home» in Servizi apre
+direttamente le istruzioni dentro Impostazioni.
+
+Nella prova con i dati di esempio il Profilo resta come prima (con le
+anteprime delle animazioni).
+
+Prove: 9 controlli sul nuovo Profilo e tutte le prove delle versioni
+precedenti. Il servizio notifiche resta alla **versione 1.7**.
 
 ---
 

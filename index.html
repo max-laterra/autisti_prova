@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- La Terra Autisti - versione 1.9 (collegata alla cartella Dropbox "Autisti La Terra") - 5 novembre 2026 -->
+<!-- La Terra Autisti - versione 1.10 (collegata alla cartella Dropbox "Autisti La Terra") - 5 novembre 2026 -->
 <html lang="it">
 <head>
 <meta charset="utf-8">
@@ -208,6 +208,9 @@ button{cursor:pointer;background:none;border:none;padding:0;-webkit-tap-highligh
 .rx-raggi{transform-box:fill-box;transform-origin:center;animation:rx-gira 14s linear infinite}
 .rx-gabbiano{animation:rx-vola 9s linear infinite}
 @keyframes rx-vola{from{transform:translate(-40px,0)}50%{transform:translate(170px,-14px)}to{transform:translate(380px,4px)}}
+/* 1.10: Profilo e Impostazioni */
+.prof-tit{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;cursor:default}
+.indietro-p{border:0;background:none;color:var(--accent);font:600 1rem var(--font);padding:8px 0}
 /* riquadro in cima a Servizi */
 .rx-card{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:0;border-radius:16px;padding:12px 14px;margin:2px 0 10px;color:#fff;font:inherit;
   background:linear-gradient(120deg,#2C2F6B,#8E4E73 70%,#E58A5C);box-shadow:var(--shadow)}
@@ -639,7 +642,7 @@ nav.tabs .pall{position:absolute;top:6px;left:calc(50% + 9px);min-width:19px;hei
     <div class="gate-body" id="gateChi"></div>
     <div class="gate-body" id="gatePw" hidden></div>
   </div>
-  <p class="gate-ver">La Terra Autisti · versione 1.9</p>
+  <p class="gate-ver">La Terra Autisti · versione 1.10</p>
 </div>
 <input type="file" id="fotoInput" accept="image/*" capture="environment" hidden>
 
@@ -1479,11 +1482,29 @@ function salvaIeri(){
 }
 
 /* ============ profilo ============ */
+// dalla 1.10: nel Profilo dei ragazzi solo notifiche, collegamento, intestazione ed Esci;
+// chiave degli scontrini e icona sulla Home stanno in «Impostazioni», che si apre toccando 6 volte la scritta «Profilo»
+let profiloImpostazioni=false,toccoProfilo=[];
+const htmlLettura=()=>'<div class="riq"><h4>Lettura automatica degli scontrini</h4><div class="intest">'+(chiaveAI()?'<b>Attiva su questo telefono.</b> Fotografa uno scontrino per provarla.':'<b>Non attiva.</b> Senza chiave le spese si scrivono a mano; la foto resta comunque allegata.')+'</div>'+
+      '<div class="campi" style="padding-top:0"><label class="campo"><span>Chiave Google (Gemini)</span><input id="chiaveIn" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="'+(chiaveAI()?"chiave salvata (incolla per cambiarla)":"incolla qui la chiave")+'"></label>'+
+      '<button class="btn" data-az="salva-chiave">Salva la chiave</button>'+(chiaveAI()?'<button class="btn ghost" data-az="togli-chiave">Togli la chiave</button>':"")+
+      '<p class="note" style="margin:0">La chiave resta solo su questo telefono. Non va mai scritta su GitHub.</p></div></div>';
+function toccaTitoloProfilo(){
+  if(!S||S.dati!=="reale"||profiloImpostazioni)return;
+  const ora=Date.now();toccoProfilo=toccoProfilo.filter(t=>ora-t<4000);toccoProfilo.push(ora);
+  if(toccoProfilo.length>=6){toccoProfilo=[];profiloImpostazioni=true;renderProfilo();window.scrollTo(0,0);}
+}
 function renderProfilo(){
   const reale=S.dati==="reale";
-  $("v-profilo").innerHTML='<h2>Profilo</h2>'+
+  if(reale&&profiloImpostazioni){
+    $("v-profilo").innerHTML='<div style="margin-bottom:6px"><button class="indietro-p" data-az="imp-chiudi">‹ Profilo</button></div><h2>Impostazioni</h2><p class="sub">Da usare solo se te lo chiede l\'ufficio.</p>'+
+      htmlLettura()+htmlHome()+
+      '<p class="versione">La Terra Autisti · versione 1.10</p>';
+    return;
+  }
+  $("v-profilo").innerHTML='<h2 class="prof-tit" data-az="prof-tocco">Profilo</h2>'+
     (reale?'<div class="profilo"><div class="nm">'+esc(S.autista.nome)+'</div><div class="rl">Autista · La Terra s.r.l. · telefono collegato all\'ufficio</div></div>'+
-      htmlNotifiche()+htmlHome()+
+      htmlNotifiche()+
       '<div class="riq"><h4>Collegamento con l\'ufficio</h4><div class="intest" style="padding-bottom:8px">I fogli nuovi arrivano da soli ogni due minuti; quello che fai tu parte subito.</div>'+
       '<div class="diag"><div><span>Fogli ricevuti</span><b>'+(R&&R.ultimo?quando(R.ultimo):"non ancora")+'</b></div>'+
       '<div><span>Ultimo invio all\'ufficio</span><b>'+(R&&R.ultimoInvio?quando(R.ultimoInvio):"nessuno")+'</b></div>'+
@@ -1492,16 +1513,13 @@ function renderProfilo(){
       '<div class="campi" style="padding-top:0"><button class="btn ghost" data-az="aggiorna">Aggiorna e invia adesso</button></div></div>':"")+
     (reale?"":'<div class="profilo"><div class="nm">'+esc(S.autista.nome)+'</div><div class="rl">Autista · La Terra s.r.l. · sei entrato con la tua password</div></div>')+
     '<div class="riq"><h4>Intestazione per la fattura</h4><div class="intest"><b>'+INTEST.nome+'</b><br>Partita Iva '+INTEST.piva+'<br>Codice univoco '+INTEST.sdi+'<br>'+INTEST.ind+'</div></div>'+
-    (DENTRO_CLAUDE?"":'<div class="riq"><h4>Lettura automatica degli scontrini</h4><div class="intest">'+(chiaveAI()?'<b>Attiva su questo telefono.</b> Fotografa uno scontrino per provarla.':'<b>Non attiva.</b> Senza chiave le spese si scrivono a mano; la foto resta comunque allegata.')+'</div>'+
-      '<div class="campi" style="padding-top:0"><label class="campo"><span>Chiave Google (Gemini)</span><input id="chiaveIn" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="'+(chiaveAI()?"chiave salvata (incolla per cambiarla)":"incolla qui la chiave")+'"></label>'+
-      '<button class="btn" data-az="salva-chiave">Salva la chiave</button>'+(chiaveAI()?'<button class="btn ghost" data-az="togli-chiave">Togli la chiave</button>':"")+
-      '<p class="note" style="margin:0">La chiave resta solo su questo telefono. Non va mai scritta su GitHub.</p></div></div>')+
+    (reale||DENTRO_CLAUDE?"":htmlLettura())+
     (reale?"":'<div class="riq"><h4>Dati di prova</h4><div class="campi"><button class="btn ghost" data-az="ricomincia">Rimetti i dati di esempio</button></div></div>'+
       '<div class="riq"><h4>Animazioni</h4><div class="intest">Così appare l\'app nei giorni speciali. Il riposo di domani cambia con la stagione (o con la festa, se cade in una festa); la rimessa ha il capannone. Le feste compaiono la prima volta che si apre l\'app quel giorno.</div>'+
       '<p class="rx-prove-t">Riposo di domani</p><div class="campi rx-prove" style="padding-top:6px">'+["inverno","primavera","estate","autunno"].map(k=>'<button class="btn ghost" data-az="scena-prova" data-s="'+k+'">'+IC_STAGIONE[k]+' '+NOMI_STAGIONE[k]+'</button>').join("")+'<button class="btn ghost" data-az="relax-prova" data-t="RM">🔧 Rimessa</button></div>'+
       '<p class="rx-prove-t">Feste</p><div class="campi rx-prove" style="padding-top:6px">'+Object.keys(FESTE).map(k=>'<button class="btn ghost" data-az="scena-prova" data-s="'+k+'">'+FESTE[k].ic+' '+FESTE[k].nome+'</button>').join("")+'</div></div>')+
     '<button class="btn ghost" data-az="esci">Esci</button>'+
-    (reale?'<p class="versione">La Terra Autisti · versione 1.9</p>':'<p class="versione">La Terra Autisti · versione 1.9 · prova<br>Nomi, clienti e importi sono inventati.</p>');
+    (reale?'<p class="versione">La Terra Autisti · versione 1.10</p>':'<p class="versione">La Terra Autisti · versione 1.10 · prova<br>Nomi, clienti e importi sono inventati.</p>');
 }
 
 /* ============ accesso: chi sei, password, resta collegato ============ */
@@ -2024,7 +2042,7 @@ function linkTelefono(){
 let homePronta=false,homeTimer=null;
 function homePrepara(){
   if(!conn)return;try{history.replaceState(null,"",linkTelefono());}catch(_){}
-  homePronta=true;clearTimeout(homeTimer);homeTimer=setTimeout(homeFatto,10*60000);vai("profilo");
+  homePronta=true;clearTimeout(homeTimer);homeTimer=setTimeout(homeFatto,10*60000);vai("profilo");profiloImpostazioni=true;renderProfilo(); // dalla 1.10 le istruzioni stanno in Impostazioni
   setTimeout(()=>{const c=$("homeBox");if(c)c.scrollIntoView({block:"start",behavior:"smooth"});},60);
 }
 function homeFatto(){
@@ -2160,6 +2178,7 @@ window.addEventListener("hashchange",()=>{if(/[#&]c=/.test(location.hash))locati
 
 /* ============ comandi ============ */
 function vai(v){
+  profiloImpostazioni=false;
   if(v==="mese"&&S&&!tourDi(OGGI))v="servizi";
   document.querySelectorAll(".view").forEach(x=>x.classList.toggle("active",x.id==="v-"+v));
   document.querySelectorAll("nav.tabs button").forEach(b=>b.classList.toggle("active",b.dataset.view===v));
@@ -2193,6 +2212,8 @@ document.addEventListener("click",e=>{
     case "relax-apri":return mostraFermo();
     case "relax-chiudi":return chiudiFermo();
     case "relax-prova":return mostraFermo({t:d.t,g:DOMANI,q:"DOMANI",poi:null});
+    case "prof-tocco":return toccaTitoloProfilo();
+    case "imp-chiudi":profiloImpostazioni=false;renderProfilo();return window.scrollTo(0,0);
     case "festa-apri":{const f=festaDi(OGGI);return f?mostraFesta(f.k):null;}
     case "scena-prova":return provaScena(d.s);
     case "salva-ieri":return salvaIeri();
@@ -2223,7 +2244,7 @@ document.addEventListener("click",e=>{
     case "not-prova":{const m=$("notMsg");if(m)m.textContent="Invio la richiesta…";
       return scriviPush({prova:new Date().toISOString()}).then(()=>{if(m)m.textContent="Fatto: la notifica arriva entro un paio di minuti. Puoi anche chiudere l'app.";}).catch(e=>{if(e&&e.code==="bloccato")return bloccato();if(m)m.textContent="Non riesco a mandarla: controlla internet e riprova.";});}
     case "home-fatto":toast("Ora apri l'app dall'icona sulla Home");scrivi_ls(HOME_NO,"1");return homeFatto();
-    case "home-no":scrivi_ls(HOME_NO,"1");toast("La trovi sempre in Profilo");return renderServizi();
+    case "home-no":scrivi_ls(HOME_NO,"1");toast("Va bene, puoi farlo più avanti");return renderServizi();
     case "incolla":{
       const campo=$("gateLink");
       if(navigator.clipboard&&navigator.clipboard.readText)return navigator.clipboard.readText().then(t=>incollaLink(t)).catch(()=>{if(campo){campo.focus();const e=$("gateMsg");if(e)e.textContent="Tieni il dito nel riquadro bianco e tocca Incolla.";}});
