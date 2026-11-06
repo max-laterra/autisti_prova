@@ -1,6 +1,6 @@
 # La Terra Autisti – App dell'autista
 
-**Versione 1.12** — 6 novembre 2026
+**Versione 1.13** — 6 novembre 2026
 
 Il numero di versione è scritto anche nell'app, in fondo alla pagina **Profilo**:
 serve a controllare quale versione è arrivata sul telefono dopo un aggiornamento.
@@ -22,10 +22,53 @@ Vanno caricati tutti nella radice del repository **autisti_prova** su GitHub
 | `README.md` | Questo file. |
 
 Dopo il caricamento: sul telefono chiudi del tutto l'app, aspetta 10 minuti e
-riaprila. In fondo al Profilo deve esserci «versione 1.12».
+riaprila. In fondo al Profilo deve esserci «versione 1.13».
 
-Questa versione non richiede modifiche al servizio delle notifiche su
-Cloudflare: resta la versione 1.7.
+Questa versione va insieme al **servizio notifiche 1.8** (Cloudflare) e
+all'**app Presenze 1.11**: insieme fanno vedere all'ufficio chi ha premuto OK
+sul riposo o sulla rimessa di domani.
+
+---
+
+## Modifiche della versione 1.13
+
+### 1. Tasto «OK» e conferma per l'ufficio
+- Nelle animazioni del riposo e della rimessa di domani il tasto ora dice
+  **«OK»** (prima «Va bene»). Nelle feste resta **«Grazie!»**.
+- Riposo e rimessa si chiudono **solo con OK**: toccando lo schermo non si
+  chiudono più. Le feste si chiudono anche toccando lo schermo, come prima.
+- Quando l'autista preme OK, il telefono scrive in
+  `/telefoni/visti/<autista>.json` il giorno, il tipo (`RI` riposo, `RM`
+  rimessa) e l'ora; se non c'è campo lo manda appena torna. Il servizio
+  notifiche 1.8 lo porta all'app Presenze 1.11, dove l'icona si colora.
+- Il file si scrive anche vuoto alla prima apertura: così l'ufficio sa che quel
+  telefono ha l'app 1.13 (per gli altri le icone in Presenze restano come prima).
+- Se l'ufficio cambia il giorno (per esempio da riposo a rimessa), compare la
+  nuova animazione e serve un nuovo OK.
+- Si tengono le conferme degli ultimi 7 giorni e di quelli futuri.
+
+### 2. Animazione di apertura
+- Le tre frecce del pullman (arancio, rossa, rosso scuro) attraversano lo
+  schermo, poi compaiono il logo, «AUTISTI» e **«BUON LAVORO»**. Dura circa
+  2,5 secondi; toccando lo schermo si salta.
+- Parte quando si apre l'app e quando ci si torna dopo un po' che non la si
+  usa. I minuti si scelgono nel **Profilo › Animazione di apertura** (1, 2, 3,
+  4, 5 o 10 minuti; **predefinito 3**); lì c'è anche «Guardala adesso».
+- Non parte: entrando con la password (c'è già il pullman della schermata
+  d'ingresso), tornando dalla fotocamera dello scontrino, sui telefoni con
+  «riduci movimento» attivo.
+- Dopo l'animazione di apertura arrivano, come prima, la festa del giorno e il
+  riposo o la rimessa di domani. Il riposo di domani ricompare quando parte
+  l'animazione di apertura (prima: dopo 5 minuti fissi).
+
+### Prove fatte prima della consegna (1.13)
+Giro completo con un archivio Supabase simulato, un Dropbox simulato, il
+servizio notifiche (prima 1.7, poi aggiornato alla 1.8) e due telefoni:
+45 controlli tutti superati (tasto OK, chiusura solo con OK, conferma inviata
+con l'ora, icone grigie e colorate in Presenze, avviso, cambio da riposo a
+rimessa, animazione di apertura con i minuti scelti, salto col tocco,
+fotocamera, «riduci movimento», feste con «Grazie!», prova con i dati di
+esempio). Più i 36 controlli di sicurezza della 1.12, tutti superati.
 
 ---
 

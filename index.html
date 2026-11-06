@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- La Terra Autisti - versione 1.12 (collegata alla cartella Dropbox "Autisti La Terra") - 6 novembre 2026 -->
+<!-- La Terra Autisti - versione 1.13 (collegata alla cartella Dropbox "Autisti La Terra") - 6 novembre 2026 -->
 <html lang="it">
 <head>
 <meta charset="utf-8">
@@ -582,6 +582,26 @@ nav.tabs .pall{position:absolute;top:6px;left:calc(50% + 9px);min-width:19px;hei
 @keyframes sobbalzo{from{transform:translateY(0)}to{transform:translateY(-1.6px)}}
 @keyframes gira{to{transform:rotate(360deg)}}
 
+/* ---------- dalla 1.13: animazione di apertura (le tre frecce La Terra e «Buon lavoro»); colori fissi, anche col tema scuro ---------- */
+.apertura{position:fixed;inset:0;z-index:260;overflow:hidden;background:#EEF0EA;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.apertura.via{animation:apVia .35s ease-in forwards}
+.apertura .fr{position:absolute;left:0;height:58px;width:150%;transform:translateX(-105%);
+  clip-path:polygon(0 0,calc(100% - 44px) 0,100% 50%,calc(100% - 44px) 100%,0 100%,30px 50%);animation:apFreccia .95s cubic-bezier(.62,.04,.32,1) forwards}
+.apertura .fr1{top:calc(44% - 104px);background:#FF7A1A;animation-delay:.04s}
+.apertura .fr2{top:calc(44% - 29px);background:#E3202F;animation-delay:.15s}
+.apertura .fr3{top:calc(44% + 46px);background:#8E1527;animation-delay:.26s}
+.apertura .logo{position:absolute;left:50%;top:44%;width:min(74vw,330px);transform:translate(-50%,-50%) scale(.55);opacity:0;animation:apPop .6s .78s cubic-bezier(.3,1.55,.5,1) forwards}
+.apertura .logo img{width:100%;height:auto;display:block}
+.apertura .sotto{position:absolute;left:0;right:0;top:calc(44% + 34px);text-align:center;font-weight:700;font-size:15px;color:#57625D;letter-spacing:1.1em;padding-left:1.1em;opacity:0;animation:apLettere .6s 1.02s cubic-bezier(.2,.8,.2,1) forwards}
+.apertura .lavoro{position:absolute;left:50%;top:calc(44% + 76px);transform:translate(-50%,12px);background:#141B18;color:#FFB21A;font-weight:700;font-size:14px;letter-spacing:.34em;
+  padding:10px 16px 10px calc(16px + .34em);border-radius:999px;white-space:nowrap;opacity:0;animation:apLavoro .5s 1.32s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes apVia{to{opacity:0}}
+@keyframes apFreccia{to{transform:translateX(72%)}}
+@keyframes apPop{to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+@keyframes apLettere{to{opacity:1;letter-spacing:.32em;padding-left:.32em}}
+@keyframes apLavoro{to{opacity:1;transform:translate(-50%,0)}}
+@media (prefers-reduced-motion: reduce){.apertura{display:none!important}}
+
 @media (min-width:900px){
   nav.tabs{max-width:720px;left:50%;transform:translateX(-50%);border:1px solid var(--line);border-bottom:none;border-radius:16px 16px 0 0}
 }
@@ -631,6 +651,7 @@ nav.tabs .pall{position:absolute;top:6px;left:calc(50% + 9px);min-width:19px;hei
 <div class="modale" id="modale" role="alertdialog" aria-modal="true"></div>
 <div id="toast" role="status" aria-live="polite"></div>
 <div class="relax" id="relax" hidden role="dialog" aria-modal="true" aria-labelledby="relaxT"></div>
+<div class="apertura" id="apertura" hidden aria-hidden="true"></div>
 <div class="gate" id="gate" hidden>
   <div class="scena" aria-hidden="true">
     <svg class="sfondo lontano" viewBox="0 0 1600 96" preserveAspectRatio="none"><g fill="rgba(255,255,255,.075)"><path d="M0 96 V74 Q60 62 120 68 T240 64 L330 24 Q345 13 360 24 L470 66 Q560 74 640 66 T800 74 V96 Z"/><path transform="translate(800 0)" d="M0 96 V74 Q60 62 120 68 T240 64 L330 24 Q345 13 360 24 L470 66 Q560 74 640 66 T800 74 V96 Z"/></g></svg>
@@ -643,7 +664,7 @@ nav.tabs .pall{position:absolute;top:6px;left:calc(50% + 9px);min-width:19px;hei
     <div class="gate-body" id="gateChi"></div>
     <div class="gate-body" id="gatePw" hidden></div>
   </div>
-  <p class="gate-ver">La Terra Autisti · versione 1.12</p>
+  <p class="gate-ver">La Terra Autisti · versione 1.13</p>
 </div>
 <input type="file" id="fotoInput" accept="image/*" capture="environment" hidden>
 
@@ -1399,7 +1420,7 @@ function mostraScena(o,dopo){
   const box=$("relax");if(!box.hidden)return false;
   box.className="relax sc sc-"+o.k+(SCENE_CHIARE[o.k]?" chiaro":"");
   box.innerHTML='<div class="rx-dentro"><h2 class="rx-tit" id="relaxT">'+o.righe.map((r,i)=>'<span class="rl'+(i===2?" gr"+(r.length>11?" lunghissimo":r.length>9?" lungo":""):"")+'" style="--i:'+i+'">'+r+'</span>').join("")+'</h2>'+
-    '<div class="rx-scena">'+o.scena+'</div><p class="rx-sub">'+o.sub+'</p><button type="button" class="rx-ok" data-az="relax-chiudi">'+(o.ok||"Va bene")+'</button></div>';
+    '<div class="rx-scena">'+o.scena+'</div><p class="rx-sub">'+o.sub+'</p><button type="button" class="rx-ok" data-az="relax-chiudi">'+(o.ok||"OK")+'</button></div>';
   box.hidden=false;fermoDopo=dopo||null;
   setTimeout(()=>{const b=box.querySelector(".rx-ok");if(b&&!box.hidden)try{b.focus({preventScroll:true});}catch(_){}},1600);
   return true;
@@ -1444,14 +1465,48 @@ function chiudiFermo(){
   box.classList.add("via");
   setTimeout(()=>{box.hidden=true;box.classList.remove("via");box.innerHTML="";fermoAperto=null;const d=fermoDopo;fermoDopo=null;if(d)d();},fermo?0:330);
 }
-$("relax").addEventListener("click",e=>{if(!e.target.closest(".rx-ok"))chiudiFermo();});
-// "ogni volta che apri l'app": anche quando torna in primo piano dopo almeno 5 minuti
-let nascostaDa=0;
+// dalla 1.13: riposo e rimessa si chiudono solo con il tasto OK (è la conferma per l'ufficio); le feste anche toccando lo schermo
+$("relax").addEventListener("click",e=>{if(!e.target.closest(".rx-ok")&&!fermoAperto)chiudiFermo();});
+// ---- dalla 1.13: animazione di apertura (le tre frecce e «Buon lavoro») ----
+// Parte quando si apre l'app e quando ci si torna dopo i minuti scelti nel Profilo (predefinito 3).
+// Si salta toccando lo schermo; con «riduci movimento» del telefono non parte.
+const APERTURA_K="laterra-autisti-apertura",USO_K="laterra-autisti-ultimo-uso",FORZA_K="laterra-autisti-apertura-forza",APERTURA_MIN=[1,2,3,4,5,10];
+const lsLeggi=k=>{try{return localStorage.getItem(k)||"";}catch(_){return "";}};
+const lsScrivi=(k,v)=>{try{if(v==null)localStorage.removeItem(k);else localStorage.setItem(k,String(v));}catch(_){}};
+const minApertura=()=>{const n=Number(lsLeggi(APERTURA_K));return APERTURA_MIN.includes(n)?n:3;};
+const usoPrima=Number(lsLeggi(USO_K))||0,forzaApertura=lsLeggi(FORZA_K)==="1"; // com'era prima di questa apertura
+lsScrivi(FORZA_K,null);
+const segnaUso=()=>lsScrivi(USO_K,Date.now());
+const serveApertura=da=>Date.now()-(Number(da)||0)>=minApertura()*60000;
+const movimentoRidotto=()=>!!(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+let aperturaFine=null,aperturaTimer=[],inFoto=0;
+// true = l'animazione parte e alla fine chiama dopo(); false = non parte (dopo() non viene chiamata)
+function mostraApertura(dopo){
+  const box=$("apertura");if(movimentoRidotto()||!box.hidden)return false;
+  aperturaFine=dopo||null;
+  box.innerHTML='<div class="fr fr1"></div><div class="fr fr2"></div><div class="fr fr3"></div><div class="logo"><img alt="" src="'+LOGO_SRC+'"></div><div class="sotto">AUTISTI</div><div class="lavoro">BUON LAVORO</div>';
+  box.classList.remove("via");box.hidden=false;
+  aperturaTimer.forEach(clearTimeout);aperturaTimer=[setTimeout(chiudiApertura,2400)];
+  return true;
+}
+function chiudiApertura(){
+  const box=$("apertura");if(box.hidden||box.classList.contains("via"))return;
+  aperturaTimer.forEach(clearTimeout);box.classList.add("via");
+  aperturaTimer=[setTimeout(()=>{box.hidden=true;box.classList.remove("via");box.innerHTML="";const d=aperturaFine;aperturaFine=null;if(d)d();},360)];
+}
+$("apertura").addEventListener("click",chiudiApertura);
+// tornando nell'app dopo i minuti scelti: animazione di apertura e poi, se c'è, il riposo o la rimessa di domani (prima: 5 minuti fissi)
 document.addEventListener("visibilitychange",()=>{
-  if(document.hidden){nascostaDa=Date.now();return;}
-  if(!nascostaDa||Date.now()-nascostaDa<300000)return;nascostaDa=0;
-  if(S&&S.dati==="reale"&&$("gate").hidden&&ieriChiesto)mostraFermo();
+  if(document.hidden){segnaUso();return;}
+  if(inFoto&&Date.now()-inFoto<900000){inFoto=0;segnaUso();return;} // di ritorno dalla fotocamera dello scontrino
+  inFoto=0;const da=Number(lsLeggi(USO_K))||0;
+  if(iso(new Date())!==OGGI){if(serveApertura(da))lsScrivi(FORZA_K,"1");return;} // giorno nuovo: l'app si ricarica e l'animazione parte dopo
+  segnaUso();
+  if(!S||!$("gate").hidden||!serveApertura(da))return;
+  const poi=()=>{if(S&&S.dati==="reale"&&$("gate").hidden&&ieriChiesto)mostraFermo();};
+  if(!mostraApertura(poi))poi();
 });
+setInterval(()=>{if(!document.hidden)segnaUso();},20000);
 
 function giornoSegnato(g){const r=segni(g);return !!(r.po||r.pl);}
 let ieriBozza=null;
@@ -1492,6 +1547,11 @@ const htmlLettura=()=>'<div class="riq"><h4>Lettura automatica degli scontrini</
       '<div class="campi" style="padding-top:0"><label class="campo"><span>Chiave Google (Gemini)</span><input id="chiaveIn" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="'+(chiaveAI()?"chiave salvata (incolla per cambiarla)":"incolla qui la chiave")+'"></label>'+
       '<button class="btn" data-az="salva-chiave">Salva la chiave</button>'+(chiaveAI()?'<button class="btn ghost" data-az="togli-chiave">Togli la chiave</button>':"")+
       '<p class="note" style="margin:0">La chiave resta solo su questo telefono. Non va mai scritta su GitHub.</p></div></div>';
+// dalla 1.13: dopo quanti minuti senza usare l'app riparte l'animazione di apertura
+const htmlApertura=()=>'<div class="riq"><h4>Animazione di apertura</h4><div class="intest" style="padding-bottom:4px">Parte quando apri l\'app e quando ci torni dopo un po\' che non la usi.</div>'+
+  '<div class="campi"><div class="not-riga" style="border-top:0;padding-top:0"><label for="aperturaMin">Quando torni dopo</label><select id="aperturaMin">'+
+  APERTURA_MIN.map(n=>'<option value="'+n+'"'+(n===minApertura()?" selected":"")+'>'+n+(n===1?" minuto":" minuti")+'</option>').join("")+'</select></div>'+
+  '<button class="btn ghost" data-az="apertura-prova">Guardala adesso</button></div></div>';
 function toccaTitoloProfilo(){
   if(!S||S.dati!=="reale"||profiloImpostazioni)return;
   const ora=Date.now();toccoProfilo=toccoProfilo.filter(t=>ora-t<4000);toccoProfilo.push(ora);
@@ -1502,7 +1562,7 @@ function renderProfilo(){
   if(reale&&profiloImpostazioni){
     $("v-profilo").innerHTML='<div style="margin-bottom:6px"><button class="indietro-p" data-az="imp-chiudi">‹ Profilo</button></div><h2>Impostazioni</h2><p class="sub">Da usare solo se te lo chiede l\'ufficio.</p>'+
       htmlLettura()+htmlHome()+
-      '<p class="versione">La Terra Autisti · versione 1.12</p>';
+      '<p class="versione">La Terra Autisti · versione 1.13</p>';
     return;
   }
   $("v-profilo").innerHTML='<h2 class="prof-tit" data-az="prof-tocco">Profilo</h2>'+
@@ -1515,6 +1575,7 @@ function renderProfilo(){
       (ultimoErrore?'<p class="err"><b>Ultimo problema '+quando(ultimoErrore.at)+':</b> '+esc(ultimoErrore.t)+'</p>':"")+'</div>'+
       '<div class="campi" style="padding-top:0"><button class="btn ghost" data-az="aggiorna">Aggiorna e invia adesso</button></div></div>':"")+
     (reale?"":'<div class="profilo"><div class="nm">'+esc(S.autista.nome)+'</div><div class="rl">Autista · La Terra s.r.l. · sei entrato con la tua password</div></div>')+
+    htmlApertura()+
     '<div class="riq"><h4>Intestazione per la fattura</h4><div class="intest"><b>'+INTEST.nome+'</b><br>Partita Iva '+INTEST.piva+'<br>Codice univoco '+INTEST.sdi+'<br>'+INTEST.ind+'</div></div>'+
     (reale||DENTRO_CLAUDE?"":htmlLettura())+
     (reale?"":'<div class="riq"><h4>Dati di prova</h4><div class="campi"><button class="btn ghost" data-az="ricomincia">Rimetti i dati di esempio</button></div></div>'+
@@ -1522,7 +1583,7 @@ function renderProfilo(){
       '<p class="rx-prove-t">Riposo di domani</p><div class="campi rx-prove" style="padding-top:6px">'+["inverno","primavera","estate","autunno"].map(k=>'<button class="btn ghost" data-az="scena-prova" data-s="'+k+'">'+IC_STAGIONE[k]+' '+NOMI_STAGIONE[k]+'</button>').join("")+'<button class="btn ghost" data-az="relax-prova" data-t="RM">🔧 Rimessa</button></div>'+
       '<p class="rx-prove-t">Feste</p><div class="campi rx-prove" style="padding-top:6px">'+Object.keys(FESTE).map(k=>'<button class="btn ghost" data-az="scena-prova" data-s="'+k+'">'+FESTE[k].ic+' '+FESTE[k].nome+'</button>').join("")+'</div></div>')+
     '<button class="btn ghost" data-az="esci">Esci</button>'+
-    (reale?'<p class="versione">La Terra Autisti · versione 1.12</p>':'<p class="versione">La Terra Autisti · versione 1.12 · prova<br>Nomi, clienti e importi sono inventati.</p>');
+    (reale?'<p class="versione">La Terra Autisti · versione 1.13</p>':'<p class="versione">La Terra Autisti · versione 1.13 · prova<br>Nomi, clienti e importi sono inventati.</p>');
 }
 
 /* ============ accesso: chi sei, password, resta collegato ============ */
@@ -1589,7 +1650,8 @@ function chiudiGate(conScena,dopo){
 }
 function entra(q,conScena){
   gateModo="prova";S=carica(q)||esempio(q);salva();vai("servizi");statoSync("dati di esempio","");
-  chiudiGate(conScena,chiediIeri);
+  const conApertura=!conScena&&(forzaApertura||serveApertura(usoPrima));segnaUso(); // dalla 1.13 (con la password c'è già il pullman)
+  chiudiGate(conScena,()=>{if(!(conApertura&&mostraApertura(chiediIeri)))chiediIeri();});
 }
 function esci(){
   homeFatto();const reale=S&&S.dati==="reale";
@@ -1608,7 +1670,7 @@ $("gatePw").addEventListener("keydown",e=>{if(e.key!=="Enter"||gateModo==="fuori
    L'Agenda scrive foglio.json, foglio.pdf e ufficio.json; l'app scrive solo telefoni/<p>.json, letto_<id>.json,
    spese.json, gli scontrini e (fuori dal foglio di collegamento) pasti/<id>/<mese>.json, che l'Agenda per ora non legge. */
 const HOME_NO="laterra-autisti-home-no",CONN_K="laterra-autisti-collegamento",STATO_K="laterra-autisti-reale",PW_K="laterra-autisti-pw",BLOCCO_K="laterra-autisti-bloccato";
-const DBX_API="https://api.dropboxapi.com",DBX_CONT="https://content.dropboxapi.com",PASTI="/telefoni/pasti/";
+const DBX_API="https://api.dropboxapi.com",DBX_CONT="https://content.dropboxapi.com",PASTI="/telefoni/pasti/",VISTI="/telefoni/visti/";
 let conn=null,R=null,tok=null,MIO_ID="",ultimoErrore=null,cambioIn=null;
 // dalla 1.12 (facoltativo): il codice dell'app Dropbox dell'ufficio («App key» nella console di Dropbox).
 // Se è scritto qui, l'app accetta solo i link di quell'app; se è vuoto, accetta il primo link e poi riconosce i link diversi.
@@ -1707,7 +1769,7 @@ async function idbGet(k){try{const db=await entro(idb(),6000);return await entro
 async function idbSet(k,v){try{const db=await entro(idb(),6000);await entro(new Promise((ok,no)=>{const t=db.transaction("kv","readwrite");t.objectStore("kv").put(v,k);t.oncomplete=()=>ok();t.onerror=()=>no(t.error);}),6000);return true;}catch(_){return false;}}
 
 // ---- stato dell'autista collegato (sul telefono) ----
-function nuovoR(){return {push:null,fogli:{},ufficio:{},spese:{},speseRev:{},letti:{},inviato:{},mesi:{},recupero:{},pastiRev:{},ultimo:null};}
+function nuovoR(){return {push:null,fogli:{},ufficio:{},spese:{},speseRev:{},letti:{},inviato:{},mesi:{},recupero:{},pastiRev:{},visti:{},ultimo:null};}
 function salvaR(){if(R)scriviJ(STATO_K,R);}
 function destDi(j){
   if(j.evento)return String(j.evento);
@@ -1725,7 +1787,7 @@ function soloMio(j,c){
   return {ridotto:true,autistiId:[],dal:j.dal,al:j.al,ritirato:!!j.ritirato,busta:b,mezzo:m};
 }
 function normR(){
-  ["fogli","ufficio","spese","speseRev","letti","inviato","mesi","recupero","pastiRev"].forEach(k=>{if(!R[k]||typeof R[k]!=="object")R[k]={};});
+  ["fogli","ufficio","spese","speseRev","letti","inviato","mesi","recupero","pastiRev","visti"].forEach(k=>{if(!R[k]||typeof R[k]!=="object")R[k]={};});
   Object.keys(R.fogli).forEach(c=>{const f=R.fogli[c];if(f&&f.j&&!f.j.ridotto&&!mioFoglio(f.j))f.j=soloMio(f.j,c);}); // pulizia dei fogli degli altri salvati dalle versioni precedenti
 }
 const speseVuote=()=>({righe:[],kmPartenza:"",kmRientro:"",note:"",consegnata:null});
@@ -1790,6 +1852,19 @@ function pastiJson(k){
   Object.keys(R.recupero||{}).sort().forEach(d=>{if(d.slice(0,7)===k)rec[d]=R.recupero[d];});
   return {v:1,autista:conn.a,autistaId:MIO_ID,mese:k,giorni:g,recupero:rec};
 }
+// dalla 1.13: i giorni di riposo (RI) e rimessa (RM) di cui l'autista ha premuto OK; l'ufficio li vede nell'app Presenze
+// (passano dal servizio notifiche). Il file si scrive anche vuoto: così l'ufficio sa che questo telefono ha l'app 1.13.
+function pulisciVisti(){
+  if(!R)return;if(!R.visti||typeof R.visti!=="object")R.visti={};const lim=piu(OGGI,-7);
+  Object.keys(R.visti).forEach(g=>{const v=R.visti[g];if(!/^\d{4}-\d\d-\d\d$/.test(g)||g<lim||!v||(v.c!=="RI"&&v.c!=="RM"))delete R.visti[g];});
+}
+function vistiJson(){pulisciVisti();const g={};Object.keys(R.visti).sort().forEach(k=>{g[k]={c:R.visti[k].c,at:String(R.visti[k].at||"")};});return {v:1,autista:conn.a,autistaId:MIO_ID,app:"1.13",giorni:g};}
+function registraVisto(){
+  const f=fermoAperto;if(!f||!S||S.dati!=="reale"||!R||!conn)return;
+  pulisciVisti();const c=f.t==="RM"?"RM":"RI",v=R.visti[f.g];
+  if(!v||v.c!==c)R.visti[f.g]={c:c,at:new Date().toISOString()};
+  salvaR();programmaInvio();
+}
 function daInviare(){
   if(!R)return 0;let n=0;
   Object.keys(R.letti).forEach(c=>{if((R.inviato["letto:"+c]||0)<R.letti[c])n++;});
@@ -1797,6 +1872,7 @@ function daInviare(){
     if(R.inviato["spese:"+c]!==impronta(corpo)&&(R.speseRev[c]||corpo.righe.length||corpo.kmPartenza!=null||corpo.kmRientro!=null||corpo.note||corpo.consegnata))n++;
     R.spese[c].righe.forEach(r=>{if(r.fotoLocale&&!r.fotoPath)n++;});});
   mesiDaInviare().forEach(k=>{if(R.inviato["pasti:"+k]!==impronta(pastiJson(k)))n++;});
+  if(conn&&R.inviato.visti!==impronta(vistiJson()))n++;
   return n;
 }
 function gestisciErrore(e){
@@ -1854,6 +1930,8 @@ function invia(){
       for(const k of mesiDaInviare()){const corpo=pastiJson(k),h=impronta(corpo);if(R.inviato["pasti:"+k]===h)continue;
         await prova(async()=>{corpo.updatedAt=new Date().toISOString();const m=await scrivi(PASTI+MIO_ID+"/"+k+".json",JSON.stringify(corpo));
           R.inviato["pasti:"+k]=h;if(m.rev)R.pastiRev[k]=m.rev;salvaR();});}
+      // 4. dalla 1.13: i riposi e le rimesse visti dall'autista (tasto OK)
+      {const corpo=vistiJson(),h=impronta(corpo);if(R.inviato.visti!==h)await prova(async()=>{corpo.updatedAt=new Date().toISOString();await scrivi(VISTI+MIO_ID+".json",JSON.stringify(corpo));R.inviato.visti=h;salvaR();});}
       if(fatto){R.ultimoInvio=new Date().toISOString();salvaR();}
       if(primo)throw primo;
       ultimoErrore=null;
@@ -2164,8 +2242,11 @@ function entraReale(conScena){
   avviaSW();
   const verso=/[#&]vai=mese/.test(location.hash)?"mese":"servizi";if(verso==="mese"){try{history.replaceState(null,"",location.pathname+location.search);}catch(_){}}
   gateModo="reale";S=costruisciS();if(verso==="mese")vaiCrocette();else vai(verso);
-  const prima=aggiorna();
-  chiudiGate(conScena,()=>{Promise.race([prima,new Promise(ok=>setTimeout(ok,5000))]).then(()=>{if(ieriChiesto||!S||S.dati!=="reale")return;ieriChiesto=true;aperturaDelGiorno(chiediIeri);});});
+  const prima=aggiorna(),pronto=Promise.race([prima,new Promise(ok=>setTimeout(ok,5000))]);
+  // dalla 1.13: animazione di apertura (non dopo la password: lì c'è già il pullman che parte); intanto l'app si aggiorna sotto
+  const conApertura=!conScena&&(forzaApertura||serveApertura(usoPrima));segnaUso();
+  const finita=new Promise(ok=>{if(!(conApertura&&mostraApertura(ok)))ok();});
+  chiudiGate(conScena,()=>{Promise.all([pronto,finita]).then(()=>{if(ieriChiesto||!S||S.dati!=="reale")return;ieriChiesto=true;aperturaDelGiorno(chiediIeri);});});
 }
 function bloccato(){
   const firma=conn?firmaR(conn.r):"1";homeFatto();
@@ -2285,6 +2366,7 @@ document.addEventListener("change",e=>{
   R.push.domani={on:$("notDomani").checked,ora:$("notOra").value};$("notOra").disabled=!R.push.domani.on;salvaR();
   scriviPush().then(()=>toast(R.push.domani.on?"Avviso alle "+R.push.domani.ora+" della sera prima":"Avviso del giorno prima spento")).catch(()=>toast("Non salvato: controlla internet"));
 });
+document.addEventListener("change",e=>{if(!e.target||e.target.id!=="aperturaMin")return;lsScrivi(APERTURA_K,e.target.value);const n=minApertura();toast("L'animazione parte quando torni dopo "+n+(n===1?" minuto":" minuti"));});
 document.addEventListener("input",e=>{if(e.target&&e.target.id==="gateLink"&&/c=/.test(e.target.value))incollaLink(e.target.value);});
 document.addEventListener("click",e=>{
   const el=e.target.closest("[data-view],[data-foglio],[data-busta],[data-az],[data-spesa],[data-cat],[data-pag],[data-x],[data-mese],[data-ieri],[data-chi]");
@@ -2304,14 +2386,15 @@ document.addEventListener("click",e=>{
     case "chiudi-vista":return chiudiVista();
     case "chiudi-sheet":return chiudiSheet();
     case "relax-apri":return mostraFermo();
-    case "relax-chiudi":return chiudiFermo();
+    case "relax-chiudi":registraVisto();return chiudiFermo();
+    case "apertura-prova":mostraApertura(null);return;
     case "relax-prova":return mostraFermo({t:d.t,g:DOMANI,q:"DOMANI",poi:null});
     case "prof-tocco":return toccaTitoloProfilo();
     case "imp-chiudi":profiloImpostazioni=false;renderProfilo();return window.scrollTo(0,0);
     case "festa-apri":{const f=festaDi(OGGI);return f?mostraFesta(f.k):null;}
     case "scena-prova":return provaScena(d.s);
     case "salva-ieri":return salvaIeri();
-    case "foto":$("fotoInput").value="";return $("fotoInput").click();
+    case "foto":$("fotoInput").value="";inFoto=Date.now();return $("fotoInput").click();
     case "mano":return apriModulo(serv(aperto.id),null,"mano");
     case "cambio-bus":{const s=serv(aperto.id);if(!s||s.spese.consegnata)return;
       const prima=!(s.spese.cambi||[]).length;s.spese.cambi=(s.spese.cambi||[]).concat([{bus:"",kmInizio:"",kmFine:""}]);salva();renderVista(false);
