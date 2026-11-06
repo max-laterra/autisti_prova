@@ -1,6 +1,6 @@
 # La Terra Autisti – App dell'autista
 
-**Versione 1.10** — 5 novembre 2026
+**Versione 1.12** — 6 novembre 2026
 
 Il numero di versione è scritto anche nell'app, in fondo alla pagina **Profilo**:
 serve a controllare quale versione è arrivata sul telefono dopo un aggiornamento.
@@ -18,18 +18,119 @@ Vanno caricati tutti nella radice del repository **autisti_prova** su GitHub
 | `sw.js` | Riceve le notifiche e apre l'app quando le tocchi. |
 | `manifest.webmanifest` | Nome e icona dell'app sulla schermata Home. |
 | `icons/` | Le icone. |
-| `vendor/` | La libreria che mostra i fogli di servizio in PDF (pdf.js, licenza Apache 2.0). |
+| `vendor/` | La libreria che mostra i fogli di servizio in PDF (pdf.js, licenza Apache 2.0) e la licenza del carattere Archivo (SIL OFL). |
 | `README.md` | Questo file. |
 
 Dopo il caricamento: sul telefono chiudi del tutto l'app, aspetta 10 minuti e
-riaprila. In fondo al Profilo deve esserci «versione 1.10».
+riaprila. In fondo al Profilo deve esserci «versione 1.12».
 
-**Insieme a questa versione va aggiornato il servizio delle notifiche su
-Cloudflare alla versione 1.7** (file a parte, da NON mettere su GitHub): senza
-quell'aggiornamento l'app funziona, ma le schermate di riposo e rimessa non
-compaiono e non arrivano le notifiche di riposo e rimessa.
+Questa versione non richiede modifiche al servizio delle notifiche su
+Cloudflare: resta la versione 1.7.
 
 ---
+
+## Modifiche della versione 1.12 – sicurezza
+
+Per l'autista non cambia niente nell'uso di tutti i giorni: fogli, busta, crocette,
+notifiche e animazioni funzionano come nella 1.11. Il servizio notifiche su
+Cloudflare resta alla **versione 1.7**.
+
+### 1. Niente più istruzioni nascoste nei dati
+I codici dei fogli e delle spese che arrivano da Dropbox vengono «ripuliti» prima
+di essere mostrati: un foglio o una spesa manipolati non possono più far eseguire
+istruzioni all'app (nella 1.11 potevano leggere la chiave di Dropbox del telefono).
+Nelle immagini delle spese vanno solo le foto fatte dall'app.
+
+### 2. Elenco dei siti permessi
+In cima a `index.html` c'è la riga **Content-Security-Policy**: l'app può
+collegarsi solo a Dropbox e a Google Gemini (lettura scontrini). Tutto il resto è
+bloccato dal telefono.
+**Se un giorno l'app deve usare un servizio nuovo, il suo indirizzo va aggiunto in
+quella riga, dopo `connect-src`, altrimenti il telefono lo blocca.**
+
+### 3. Carattere dentro l'app
+Il carattere Archivo è dentro `index.html` (licenza in `vendor/LICENSE-archivo.txt`):
+il telefono non contatta più Google Fonts a ogni apertura.
+
+### 4. Sul telefono solo i fogli dell'autista
+Prima ogni telefono teneva in memoria i fogli di servizio di **tutti** gli autisti
+(clienti, itinerari, buste). Ora tiene solo i suoi. Di un tour passato a un altro
+autista, se la busta era già iniziata, tiene solo numero della busta, mezzo e date
+(per poter mandare le spese ancora in sospeso). Alla prima apertura della 1.12 i
+fogli degli altri già salvati vengono tolti.
+
+### 5. Link di collegamento diverso: controlli e conferma
+- Se il telefono è già collegato e si apre un link diverso, l'app chiede conferma
+  («Nuovo collegamento»; se il link è per un altro autista lo dice).
+- Prima di usarlo controlla che sia della **stessa app Dropbox** e dello **stesso
+  Dropbox dell'ufficio**; se no compare «Link non valido» e il telefono resta com'era.
+- Prima del cambio manda all'ufficio quello che è rimasto sul telefono.
+- **Stesso autista** (per esempio password dimenticata): spese, foto e crocette
+  restano sul telefono; si sceglie solo una password nuova.
+- **Altro autista**: se c'è qualcosa non ancora arrivato all'ufficio, l'app avvisa
+  e serve un secondo tocco («Collega lo stesso»); poi i dati del vecchio autista
+  vengono tolti e le sue notifiche spente su quel telefono.
+- Il telefono si ricorda il Dropbox dell'ufficio (campo `acc` nel collegamento,
+  letto da Dropbox al primo aggiornamento).
+- Facoltativo: nel codice c'è la costante `APP_DROPBOX`. Se ci si scrive l'«App
+  key» dell'app Dropbox dell'ufficio, l'app accetta solo link di quell'app anche
+  sui telefoni nuovi.
+
+### 6. Icona sulla schermata Home
+Su Android il codice di collegamento non va più nell'indirizzo dell'icona (non
+serve: l'icona usa la memoria di Chrome). Su iPhone resta, perché lì l'icona ha una
+memoria separata da Safari.
+
+### 7. Password
+- Le password nuove devono avere almeno **6 caratteri** e non possono essere troppo
+  facili (123456, tutte uguali, il proprio nome…). Le password già scelte restano valide.
+- I tentativi sbagliati restano contati anche chiudendo e riaprendo l'app: dopo 5
+  errori si aspetta 30 secondi, dopo 10 cinque minuti, dopo 15 mezz'ora.
+
+### 8. Telefono bloccato dall'ufficio
+Come prima: il telefono cancella collegamento, dati e foto non ancora inviate. È
+voluto: serve quando un telefono viene perso o rubato.
+
+### Restano da fare (servono l'Agenda e il servizio su Cloudflare)
+- Il link/QR contiene ancora la chiave di Dropbox: chi lo copia può entrare nella
+  cartella finché l'ufficio non blocca il telefono.
+- La chiave di ogni telefono può leggere e scrivere tutta la cartella
+  «Autisti La Terra», anche i dati degli altri autisti.
+Soluzione prevista: il QR contiene un codice che vale una volta sola e il telefono
+parla con il servizio su Cloudflare, non direttamente con Dropbox.
+
+#### Da chiedere nella chat dell'Agenda
+> L'app autisti 1.12 ripulisce (escape HTML) tutto quello che arriva da Dropbox.
+> L'Agenda deve fare lo stesso con tutti i testi scritti dai telefoni prima di
+> mostrarli: `spese.json` (righe: id, luogo, nota, autista, modificataDa; note),
+> `letto_*.json` (autista), `telefoni/*.json` (autista, dispositivo),
+> `telefoni/push/*.json`, `telefoni/pasti/*/*.json`. Un telefono può scrivere in
+> tutta la cartella, quindi questi file non sono affidabili.
+
+#### Prove fatte prima della consegna (1.12)
+Con un Dropbox simulato e un telefono simulato, 36 controlli tutti superati:
+foglio e spesa manipolati (nessuna istruzione eseguita), foglio di un altro
+autista non salvato, PDF del foglio, invio di spese e «aperto», password corte o
+facili rifiutate, attesa dopo 5 errori che resta riaprendo l'app, link nuovo per
+lo stesso autista (spese conservate, vecchie notifiche spente), link di un'altra
+app Dropbox e link verso un altro Dropbox (rifiutati), telefono passato a un altro
+autista con spese non inviate (avviso, poi dati tolti), icona sulla Home su
+Android e su iPhone, lettura dello scontrino con Gemini, telefono bloccato, prova
+con i dati di esempio; nessun collegamento a siti non previsti, nessun errore.
+In più: pulizia dei fogli degli altri salvati dalla 1.11 e blocco di un invio
+verso un sito non permesso.
+
+---
+
+## Modifiche della versione 1.11
+
+- Nelle animazioni del riposo la scritta grande ora è **«NOME DOMANI RIPOSO»**
+  (prima era «RELAX»), in tutte le scene: inverno, primavera, estate, autunno
+  e feste.
+- Nei riquadri della pagina Servizi ora c'è scritto **«Oggi a riposo»** e
+  **«Domani a riposo»** (prima «relax»).
+- Nessun altro cambiamento: rimessa, feste, notifiche, Profilo e Impostazioni
+  funzionano come nella 1.10.
 
 ## Modifiche della versione 1.10
 
