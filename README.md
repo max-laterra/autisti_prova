@@ -1,6 +1,6 @@
 # La Terra Autisti – App dell'autista
 
-**Versione 1.13** — 6 novembre 2026
+**Versione 1.14** — 9 novembre 2026
 
 Il numero di versione è scritto anche nell'app, in fondo alla pagina **Profilo**:
 serve a controllare quale versione è arrivata sul telefono dopo un aggiornamento.
@@ -22,11 +22,63 @@ Vanno caricati tutti nella radice del repository **autisti_prova** su GitHub
 | `README.md` | Questo file. |
 
 Dopo il caricamento: sul telefono chiudi del tutto l'app, aspetta 10 minuti e
-riaprila. In fondo al Profilo deve esserci «versione 1.13».
+riaprila. In fondo al Profilo deve esserci «versione 1.14».
 
-Questa versione va insieme al **servizio notifiche 1.8** (Cloudflare) e
-all'**app Presenze 1.11**: insieme fanno vedere all'ufficio chi ha premuto OK
-sul riposo o sulla rimessa di domani.
+Questa versione va insieme al **servizio notifiche 1.9** (Cloudflare) e
+all'**app Presenze 1.11** (che non cambia).
+
+---
+
+## Modifiche della versione 1.14
+
+### Più autisti nello stesso servizio
+Quando nell'Agenda Massimo mette più autisti sullo stesso servizio, il foglio
+arriva già a tutti. Dalla 1.14 l'app riconosce due casi:
+- **Stesso pullman**: più autisti nello stesso foglio (un solo pullman), come
+  la gita a Cesarò dell'8 novembre con Lo Buglio e Calabrese.
+- **Pullman separati**: fogli diversi con **stesso cliente, stessi giorni,
+  stessa ora di partenza e stesso luogo di carico**, come le navette del
+  Comune di Ragusa del 1° novembre. Il luogo di carico è la parte «da …»
+  dell'itinerario («da ragusa x scicli» → Ragusa); se l'itinerario non comincia
+  con «da», conta l'itinerario intero. Se un giorno l'Agenda manderà un campo
+  `luogoCarico`, l'app userà quello.
+
+### Animazione «insieme» (i tesserini)
+- «MARIO / DOMANI SEI INSIEME A / LUCA» (con più colleghi «PINO E UGO»), con i
+  tesserini degli autisti: collegati a un solo pullman se è lo stesso, ognuno
+  con il suo pullman se sono separati. Sotto: «Sullo stesso pullman» con data,
+  posti e targa, oppure «Ognuno con il suo pullman» con i posti di ciascuno.
+- Compare **quando arriva il foglio** (con il giorno: «GIOVEDÌ 12 SEI INSIEME
+  A») e **la sera prima** («DOMANI»), una volta ciascuna; se il foglio arriva
+  proprio la sera prima, una volta sola. Si chiude **solo con OK**.
+- Se arriva il foglio di un altro collega dello stesso servizio, ricompare con
+  i nomi aggiornati (anche con l'app aperta).
+- Ordine all'apertura: animazione di apertura, festa, riposo o rimessa di
+  domani, «insieme», poi la domanda sulle crocette di ieri.
+- Nelle schede dei servizi: «Con Luca Verdi · stesso pullman» oppure «Con Pino
+  Bianchi · ognuno il suo pullman».
+- Nella prova con i dati di esempio: Profilo › Animazioni › «Insieme».
+
+### Busta spese con lo stesso pullman
+- Scrive nella busta **solo il primo autista** dell'elenco dell'Agenda.
+- Gli altri la vedono, aggiornata, con la scritta «La busta la gestisce …: tu
+  puoi solo guardarla»: niente spese nuove, km, note o consegna. Il loro
+  telefono non riscrive mai la busta.
+- Con i pullman separati ognuno ha la sua busta, come prima.
+
+### Dati sul telefono
+Dei fogli degli altri autisti il telefono tiene solo quello che serve per
+sapere chi è insieme: una chiave cifrata del servizio, i nomi degli autisti e
+i posti del pullman (niente cliente né itinerario). Alla prima apertura della
+1.14 i fogli degli altri si rileggono una volta.
+
+### Prove fatte prima della consegna (1.14)
+Con Dropbox e archivio simulati e due telefoni: 32 controlli sulle novità
+(stesso pullman, pullman separati, luogo di carico o ora diversi esclusi,
+animazione all'arrivo e la sera prima, solo con OK, collega aggiunto con l'app
+aperta, schede, busta in sola lettura per il secondo autista, notifiche del
+servizio 1.9, errore 520), più i 36 controlli di sicurezza e i 45 del giro con
+l'app Presenze: tutti superati.
 
 ---
 
