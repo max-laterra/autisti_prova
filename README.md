@@ -1,6 +1,6 @@
 # La Terra Autisti – App dell'autista
 
-**Versione 1.14** — 9 novembre 2026
+**Versione 1.15** — 9 novembre 2026
 
 Il numero di versione è scritto anche nell'app, in fondo alla pagina **Profilo**:
 serve a controllare quale versione è arrivata sul telefono dopo un aggiornamento.
@@ -22,10 +22,24 @@ Vanno caricati tutti nella radice del repository **autisti_prova** su GitHub
 | `README.md` | Questo file. |
 
 Dopo il caricamento: sul telefono chiudi del tutto l'app, aspetta 10 minuti e
-riaprila. In fondo al Profilo deve esserci «versione 1.14».
+riaprila. In fondo al Profilo deve esserci «versione 1.15».
 
 Questa versione va insieme al **servizio notifiche 1.9** (Cloudflare) e
 all'**app Presenze 1.11** (che non cambia).
+
+---
+
+## Modifiche della versione 1.15
+
+- Nell'animazione «insieme» i colleghi hanno **nome e cognome**: nella scritta
+  grande («MARIO / DOMANI SEI INSIEME A / LUCA VERDI»; con più colleghi «PINO
+  BIANCHI E UGO GIALLI», più piccola se è lunga), sui tesserini (nome e sotto il
+  cognome; sul tuo «Tu» e sotto nome e cognome) e nella riga sotto («Pino
+  Bianchi: 50 posti»).
+- Il tuo nome in alto resta solo il nome, come nelle altre animazioni.
+- Nient'altro cambia. Servizio notifiche: resta la 1.9. Presenze: resta la 1.11.
+- Prove: 32 controlli su «insieme», 36 di sicurezza e 45 del giro con
+  Presenze, tutti superati.
 
 ---
 
