@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- La Terra Autisti - versione 1.15 (collegata alla cartella Dropbox "Autisti La Terra") - 9 novembre 2026 -->
+<!-- La Terra Autisti - versione 1.18 (collegata alla cartella Dropbox "Autisti La Terra") - 11 novembre 2026 -->
 <html lang="it">
 <head>
 <meta charset="utf-8">
@@ -556,6 +556,10 @@ nav.tabs .pall{position:absolute;top:6px;left:calc(50% + 9px);min-width:19px;hei
 .not-riga input[type=checkbox]{width:24px;height:24px;accent-color:var(--accent)}
 .not-riga select{min-height:46px;border:1px solid var(--line-strong);border-radius:10px;padding:0 10px;font:inherit;background:var(--card);color:var(--ink)}
 .not-nota{font-size:.92rem;color:var(--ink-soft);margin:0}
+/* dalla 1.17: nel Profilo visibile solo lo stato delle notifiche (attivarle si fa da Impostazioni) */
+.not-stato{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:13px 14px;font-weight:600}
+.not-stato b.ok{color:var(--accent)}
+.not-stato b.no{color:var(--danger);text-align:right}
 .gate-passi{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:.98rem}
 .gate-passi>b{display:block;margin-bottom:6px}
 .gate-passi ol{margin:0;padding-left:1.3em;display:grid;gap:6px}
@@ -604,6 +608,7 @@ nav.tabs .pall{position:absolute;top:6px;left:calc(50% + 9px);min-width:19px;hei
 
 /* ---------- dalla 1.14: «insieme» (più autisti nello stesso servizio): i tesserini ---------- */
 .sc-INS{--g1:#0D3329;--g2:#1E6F5C;--g3:#2E8C74}
+.sc-INS .rx-scena{aspect-ratio:320/128} /* dalla 1.16: solo i tesserini, senza il pullman */
 .rx-tit .medio{font-size:.6em;letter-spacing:.04em}
 .rx-tit .gr.esteso{font-size:.62em;line-height:1.1;letter-spacing:.02em} /* dalla 1.15: nomi e cognomi */
 .ins-sx{animation:ins-sx 1s cubic-bezier(.3,1.3,.5,1) both;animation-delay:var(--d,.2s)}
@@ -684,7 +689,7 @@ nav.tabs .pall{position:absolute;top:6px;left:calc(50% + 9px);min-width:19px;hei
     <div class="gate-body" id="gateChi"></div>
     <div class="gate-body" id="gatePw" hidden></div>
   </div>
-  <p class="gate-ver">La Terra Autisti · versione 1.15</p>
+  <p class="gate-ver">La Terra Autisti · versione 1.18</p>
 </div>
 <input type="file" id="fotoInput" accept="image/*" capture="environment" hidden>
 
@@ -1482,8 +1487,6 @@ function nomiTitolo(lista){
 }
 const corto=(t,n)=>t.length>n?t.slice(0,n-1)+"…":t;
 function scenaInsieme(s,ins){
-  const busIn=busPiccolo.slice(busPiccolo.indexOf('<g class="rx-bus">')+18,-8);
-  const bus=(x,y,w,d)=>'<g class="ins-sale" style="--d:'+d+'s"><g transform="translate('+x+' '+y+') scale('+(w/300).toFixed(3)+')">'+busIn+'</g></g>';
   const cognome=t=>{const p=String(t||"").trim().split(/\s+/);return p.length>1?p.slice(0,-1).join(" "):"";}; // «Lo Buglio Antonio» → «Lo Buglio»
   const mio=S&&S.autista?(S.dati==="reale"?nomeDa(S.autista.nome):String(S.autista.nome||"")):""; // la prova scrive già «Nome Cognome»
   const col=["#FF7A1A","#E3202F","#8E1527","#B0485A"],pers=[{nome:"Tu",cogn:mio,iniz:(nomeBreve()[0]||"T").toUpperCase(),bus:s.mezzoNome||""}]
@@ -1491,7 +1494,7 @@ function scenaInsieme(s,ins){
     .concat(ins.separati.map(x=>({nome:primoNome(x.nome),cogn:cognome(x.nome),iniz:(primoNome(x.nome)[0]||"?").toUpperCase(),bus:x.mezzo||""})));
   const extra=Math.max(0,pers.length-3),vis=pers.slice(0,3),n=vis.length,w=n===2?140:98,xs=n===2?[10,170]:[6,111,216];
   const classi=n===2?["ins-sx","ins-dx"]:["ins-sx","ins-su","ins-dx"];
-  const tess=(p,i)=>{const x=xs[i],y=24,c=col[i%col.length];
+  const tess=(p,i)=>{const x=xs[i],y=18,c=col[i%col.length];
     if(n===2)return '<g class="'+classi[i]+'" style="--d:.15s"><rect x="'+x+'" y="'+y+'" width="'+w+'" height="84" rx="12" fill="#fff"/><rect x="'+x+'" y="'+y+'" width="'+w+'" height="8" rx="4" fill="'+c+'"/>'+
       '<circle cx="'+(x+22)+'" cy="'+(y+32)+'" r="15" fill="'+c+'"/><text class="tess-iniz" x="'+(x+22)+'" y="'+(y+37.5)+'" text-anchor="middle">'+esc(p.iniz)+'</text>'+
       '<text class="tess-nome" x="'+(x+43)+'" y="'+(y+30)+'">'+esc(corto(p.nome,10))+'</text><text class="tess-ruolo" x="'+(x+43)+'" y="'+(y+45)+'">'+esc(corto(p.cogn||"Autista",14))+'</text>'+
@@ -1501,16 +1504,10 @@ function scenaInsieme(s,ins){
       '<text class="tess-nome" x="'+(x+w/2)+'" y="'+(y+53)+'" text-anchor="middle">'+esc(corto(p.nome,11))+'</text>'+
       (p.cogn?'<text class="tess-ruolo" x="'+(x+w/2)+'" y="'+(y+66)+'" text-anchor="middle">'+esc(corto(p.cogn,14))+'</text>':"")+
       (p.bus?'<text class="tess-bus" x="'+(x+w/2)+'" y="'+(y+83)+'" text-anchor="middle">🚌 '+esc(corto(p.bus,13))+'</text>':"")+'</g>';};
-  let h='<svg viewBox="0 0 320 220" aria-hidden="true">'+vis.map(tess).join("");
-  if(extra)h+='<g class="ins-sale" style="--d:.9s"><circle cx="298" cy="30" r="16" fill="#141B18" stroke="#fff" stroke-width="2"/><text class="tess-piu" x="298" y="35" text-anchor="middle">+'+extra+'</text></g>';
-  if(!ins.separati.length){ // tutti sullo stesso pullman: una linea li porta all'unico pullman
-    h+=n===2?'<path class="ins-linea" style="--d:1s" d="M80 110 Q80 140 120 150 M240 110 Q240 140 200 150" stroke="#FFD27F" stroke-width="3" fill="none"/>'
-            :'<path class="ins-linea" style="--d:1s" d="M55 118 Q60 140 110 150 M160 118 V140 M265 118 Q260 140 210 150" stroke="#FFD27F" stroke-width="3" fill="none"/>';
-    h+=bus(75,140,170,1.1);
-  }else{ // ognuno con il suo pullman
-    h+=n===2?'<path class="ins-linea" style="--d:1s" d="M150 66 H170" stroke="#FFD27F" stroke-width="4"/>':'<path class="ins-linea" style="--d:1s" d="M104 66 H111 M209 66 H216" stroke="#FFD27F" stroke-width="4"/>';
-    vis.forEach((p,i)=>{const bw=n===2?140:92,bx=n===2?xs[i]:xs[i]+3;h+=bus(bx,146,bw,1.1+i*.1);});
-  }
+  let h='<svg viewBox="0 0 320 128" aria-hidden="true">'+vis.map(tess).join("");
+  if(extra)h+='<g class="ins-sale" style="--d:.9s"><circle cx="298" cy="24" r="16" fill="#141B18" stroke="#fff" stroke-width="2"/><text class="tess-piu" x="298" y="29" text-anchor="middle">+'+extra+'</text></g>';
+  // dalla 1.16 niente disegno del pullman: i tesserini uniti da un trattino giallo («stesso pullman» o «ognuno il suo» lo dice la scritta sotto)
+  h+=n===2?'<path class="ins-linea" style="--d:1s" d="M150 60 H170" stroke="#FFD27F" stroke-width="4"/>':'<path class="ins-linea" style="--d:1s" d="M104 60 H111 M209 60 H216" stroke="#FFD27F" stroke-width="4"/>';
   return h+'</svg>';
 }
 function oggettoInsieme(s,ins){
@@ -1662,13 +1659,13 @@ function renderProfilo(){
   const reale=S.dati==="reale";
   if(reale&&profiloImpostazioni){
     $("v-profilo").innerHTML='<div style="margin-bottom:6px"><button class="indietro-p" data-az="imp-chiudi">‹ Profilo</button></div><h2>Impostazioni</h2><p class="sub">Da usare solo se te lo chiede l\'ufficio.</p>'+
-      htmlLettura()+htmlHome()+
-      '<p class="versione">La Terra Autisti · versione 1.15</p>';
+      htmlNotifiche()+htmlApertura()+htmlLettura()+htmlHome()+ // dalla 1.17: TUTTE le impostazioni stanno qui
+      '<p class="versione">La Terra Autisti · versione 1.18</p>';
     return;
   }
   $("v-profilo").innerHTML='<h2 class="prof-tit" data-az="prof-tocco">Profilo</h2>'+
     (reale?'<div class="profilo"><div class="nm">'+esc(S.autista.nome)+'</div><div class="rl">Autista · La Terra s.r.l. · telefono collegato all\'ufficio</div></div>'+
-      htmlNotifiche()+
+      htmlStatoNotifiche()+
       '<div class="riq"><h4>Collegamento con l\'ufficio</h4><div class="intest" style="padding-bottom:8px">I fogli nuovi arrivano da soli ogni due minuti; quello che fai tu parte subito.</div>'+
       '<div class="diag"><div><span>Fogli ricevuti</span><b>'+(R&&R.ultimo?quando(R.ultimo):"non ancora")+'</b></div>'+
       '<div><span>Ultimo invio all\'ufficio</span><b>'+(R&&R.ultimoInvio?quando(R.ultimoInvio):"nessuno")+'</b></div>'+
@@ -1676,7 +1673,7 @@ function renderProfilo(){
       (ultimoErrore?'<p class="err"><b>Ultimo problema '+quando(ultimoErrore.at)+':</b> '+esc(ultimoErrore.t)+'</p>':"")+'</div>'+
       '<div class="campi" style="padding-top:0"><button class="btn ghost" data-az="aggiorna">Aggiorna e invia adesso</button></div></div>':"")+
     (reale?"":'<div class="profilo"><div class="nm">'+esc(S.autista.nome)+'</div><div class="rl">Autista · La Terra s.r.l. · sei entrato con la tua password</div></div>')+
-    htmlApertura()+
+    (reale?"":htmlApertura())+ // nella prova con i dati di esempio resta visibile
     '<div class="riq"><h4>Intestazione per la fattura</h4><div class="intest"><b>'+INTEST.nome+'</b><br>Partita Iva '+INTEST.piva+'<br>Codice univoco '+INTEST.sdi+'<br>'+INTEST.ind+'</div></div>'+
     (reale||DENTRO_CLAUDE?"":htmlLettura())+
     (reale?"":'<div class="riq"><h4>Dati di prova</h4><div class="campi"><button class="btn ghost" data-az="ricomincia">Rimetti i dati di esempio</button></div></div>'+
@@ -1684,7 +1681,7 @@ function renderProfilo(){
       '<p class="rx-prove-t">Riposo di domani</p><div class="campi rx-prove" style="padding-top:6px">'+["inverno","primavera","estate","autunno"].map(k=>'<button class="btn ghost" data-az="scena-prova" data-s="'+k+'">'+IC_STAGIONE[k]+' '+NOMI_STAGIONE[k]+'</button>').join("")+'<button class="btn ghost" data-az="relax-prova" data-t="RM">🔧 Rimessa</button><button class="btn ghost" data-az="insieme-prova" data-v="stesso">👥 Insieme, stesso pullman</button><button class="btn ghost" data-az="insieme-prova" data-v="separati">🚌 Insieme, pullman separati</button></div>'+
       '<p class="rx-prove-t">Feste</p><div class="campi rx-prove" style="padding-top:6px">'+Object.keys(FESTE).map(k=>'<button class="btn ghost" data-az="scena-prova" data-s="'+k+'">'+FESTE[k].ic+' '+FESTE[k].nome+'</button>').join("")+'</div></div>')+
     '<button class="btn ghost" data-az="esci">Esci</button>'+
-    (reale?'<p class="versione">La Terra Autisti · versione 1.15</p>':'<p class="versione">La Terra Autisti · versione 1.15 · prova<br>Nomi, clienti e importi sono inventati.</p>');
+    (reale?'<p class="versione">La Terra Autisti · versione 1.18</p>':'<p class="versione">La Terra Autisti · versione 1.18 · prova<br>Nomi, clienti e importi sono inventati.</p>');
 }
 
 /* ============ accesso: chi sei, password, resta collegato ============ */
@@ -1998,7 +1995,7 @@ function pulisciVisti(){
   if(!R)return;if(!R.visti||typeof R.visti!=="object")R.visti={};const lim=piu(OGGI,-7);
   Object.keys(R.visti).forEach(g=>{const v=R.visti[g];if(!/^\d{4}-\d\d-\d\d$/.test(g)||g<lim||!v||(v.c!=="RI"&&v.c!=="RM"))delete R.visti[g];});
 }
-function vistiJson(){pulisciVisti();const g={};Object.keys(R.visti).sort().forEach(k=>{g[k]={c:R.visti[k].c,at:String(R.visti[k].at||"")};});return {v:1,autista:conn.a,autistaId:MIO_ID,app:"1.15",giorni:g};}
+function vistiJson(){pulisciVisti();const g={};Object.keys(R.visti).sort().forEach(k=>{g[k]={c:R.visti[k].c,at:String(R.visti[k].at||"")};});return {v:1,autista:conn.a,autistaId:MIO_ID,app:"1.18",giorni:g};}
 function registraVisto(){
   const f=fermoAperto;if(!f||!S||S.dati!=="reale"||!R||!conn)return;
   pulisciVisti();const c=f.t==="RM"?"RM":"RI",v=R.visti[f.g];
@@ -2085,6 +2082,21 @@ function invia(){
 
 // ---- lettura di quello che manda l'ufficio ----
 let aggiornando=null,aggiornandoDal=0,giroAgg=0,telefonoScritto=false;
+// dalla 1.18: il file /telefoni/<telefono>.json dice anche la versione dell'app e com'è andato l'ultimo aggiornamento.
+// Lo legge la Diagnostica: prima la versione si capiva solo dalle conferme dei riposi, che partono solo quando cambiano.
+// Si scrive all'apertura, dopo il primo aggiornamento riuscito (o dopo il primo problema) e di nuovo dopo 3 ore di app in disparte.
+let aperturaAt=new Date().toISOString(),telefonoOk=false,telefonoErr=false,telefonoAt=0;
+function telefonoJson(){
+  return {v:1,autista:conn.a,collegatoAt:conn.at,ultimoAccesso:aperturaAt,dispositivo:etichettaDispositivo(),app:"1.18",
+    aggiornatoAt:(R&&R.ultimo)||"",ultimoInvio:(R&&R.ultimoInvio)||"",daInviare:R?daInviare():0,
+    problema:ultimoErrore?{at:String(ultimoErrore.at||""),t:String(ultimoErrore.t||"").slice(0,160)}:null};
+}
+async function scriviTelefono(){await scrivi("/telefoni/"+conn.p+".json",JSON.stringify(telefonoJson()));telefonoAt=Date.now();}
+function riapriTelefono(){ // l'app torna davanti dopo almeno 3 ore: nuova apertura subito, poi «aggiornato» al primo aggiornamento riuscito
+  if(!conn||Date.now()-telefonoAt<3*3600e3)return;
+  aperturaAt=new Date().toISOString();telefonoOk=false;telefonoErr=false;telefonoScritto=true;telefonoAt=Date.now();
+  scriviTelefono().catch(()=>{telefonoScritto=false;telefonoAt=0;});
+}
 function aggiorna(){
   if(!conn||!R)return Promise.resolve();
   if(aggiornando&&Date.now()-aggiornandoDal<240000)return aggiornando;
@@ -2093,7 +2105,7 @@ function aggiorna(){
     await null; // vedi invia()
     statoSync("aggiorno…","via");
     try{
-      if(!telefonoScritto){await scrivi("/telefoni/"+conn.p+".json",JSON.stringify({v:1,autista:conn.a,collegatoAt:conn.at,ultimoAccesso:new Date().toISOString(),dispositivo:etichettaDispositivo()}));telefonoScritto=true;}
+      if(!telefonoScritto){await scriviTelefono();telefonoScritto=true;}
       if(!conn.acc){try{const me=await rpc("users/get_current_account",null);if(me&&me.account_id){conn.acc=String(me.account_id);scriviJ(CONN_K,conn);}}catch(e){if(e&&e.code==="bloccato")throw e;}} // dalla 1.12: il Dropbox dell'ufficio, per riconoscere i link falsi
       const voci=await elenca("/servizi"),cart={};
       for(const v of voci){if(v[".tag"]!=="file")continue;const m=/^(\/servizi\/\d{4}\/[a-z0-9_-]+)\/([^/]+)$/.exec(v.path_lower||"");if(!m)continue;(cart[m[1]]=cart[m[1]]||{})[m[2]]=v.rev;}
@@ -2136,9 +2148,10 @@ function aggiorna(){
       R.ultimo=new Date().toISOString();salvaR();
       if(cambiato&&S&&S.dati==="reale"){S.servizi=costruisciServizi();togliCrocetteSenzaFoglio();ridisegna();if(ieriChiesto&&insiemeDaMostrare())setTimeout(insiemeQuandoLibero,600);}
       await invia();
+      if(!telefonoOk&&conn){telefonoOk=true;try{await scriviTelefono();}catch(_){}} // dalla 1.18: «aggiornato, versione 1.18» (prima delle notifiche, che possono metterci qualche secondo)
       await controllaPush();
       statoSync("aggiornato alle "+oraBreve(),"ok");
-    }catch(e){gestisciErrore(e);}
+    }catch(e){gestisciErrore(e);if(conn&&!telefonoErr&&!(e&&e.code==="bloccato")){telefonoErr=true;scriviTelefono().catch(()=>{});}} // dalla 1.18: l'ufficio vede il problema
     finally{if(giro===giroAgg)aggiornando=null;}
   })();
   return aggiornando;
@@ -2264,6 +2277,18 @@ async function controllaPush(){
     if(Notification.permission!=="granted"){R.push.on=false;salvaR();return;}
     const nuova=await iscrizione(pub,R.push.pub!==pub);R.push.pub=pub;R.push.endpoint=nuova.endpoint;salvaR();await scriviPush();
   }catch(e){if(e&&e.code==="bloccato")throw e;}
+}
+// dalla 1.17: regola dell'app — tutte le impostazioni stanno nella pagina nascosta «Impostazioni»
+// (6 tocchi sulla scritta «Profilo» entro 4 secondi). Nel Profilo visibile resta solo lo stato delle notifiche.
+function htmlStatoNotifiche(){
+  if(!conn)return "";
+  let ok=false,t;
+  if(IPHONE&&!STANDALONE)t="non attive";
+  else if(!PUSH_OK)t="non disponibili su questo telefono";
+  else if(Notification.permission==="denied")t="bloccate dal telefono";
+  else if(R&&R.push&&R.push.on){ok=true;t="attive";}
+  else t="non attive";
+  return '<div class="riq" id="notStato"><div class="not-stato"><span>Notifiche</span><b class="'+(ok?"ok":"no")+'">'+t+(ok?"":" · chiedi in ufficio")+'</b></div></div>';
 }
 function htmlNotifiche(){
   if(!conn)return "";
@@ -2392,7 +2417,7 @@ function bloccato(){
   const firma=conn?firmaR(conn.r):"1";homeFatto();
   if(PUSH_OK)swPronto().then(r=>r.pushManager.getSubscription()).then(x=>x&&x.unsubscribe()).catch(()=>{});
   scriviJ(CONN_K,null);scriviJ(STATO_K,null);scriviJ(PW_K,null);scrivi_ls(SESS,null);scrivi_ls(ULTIMO,null);scrivi_ls(BLOCCO_K,firma);
-  conn=null;R=null;tok=null;telefonoScritto=false;
+  conn=null;R=null;tok=null;telefonoScritto=false;telefonoOk=false;telefonoErr=false;telefonoAt=0;
   idb().then(db=>{db.close();idbP=null;try{indexedDB.deleteDatabase("laterra-autisti");}catch(_){}}).catch(()=>{});
   aperto=null;$("vista").classList.remove("open");chiudiSheet();chiudiModale();S=null;
   ["v-servizi","v-mese","v-profilo"].forEach(k=>{$(k).innerHTML="";});
@@ -2592,7 +2617,7 @@ $("vistaCorpo").addEventListener("input",e=>{
 document.addEventListener("keydown",e=>{if(e.key!=="Escape")return;if($("modale").classList.contains("open"))chiudiModale();else if($("sheet").classList.contains("open"))chiudiSheet();else if(aperto)chiudiVista();});
 
 // se l'app resta aperta oltre la mezzanotte, al ritorno riparte con il giorno nuovo
-document.addEventListener("visibilitychange",()=>{if(document.hidden)return;if(iso(new Date())!==OGGI)return location.reload();if(S&&S.dati==="reale")aggiorna();});
+document.addEventListener("visibilitychange",()=>{if(document.hidden)return;if(iso(new Date())!==OGGI)return location.reload();if(S&&S.dati==="reale"){riapriTelefono();aggiorna();}});
 
 avvia();
 })();

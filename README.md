@@ -1,9 +1,22 @@
 # La Terra Autisti – App dell'autista
 
-**Versione 1.15** — 9 novembre 2026
+**Versione 1.18** — 11 novembre 2026
 
 Il numero di versione è scritto anche nell'app, in fondo alla pagina **Profilo**:
 serve a controllare quale versione è arrivata sul telefono dopo un aggiornamento.
+
+---
+
+## Regola per le impostazioni (dalla 1.17)
+
+**Tutte le impostazioni dell'app stanno nella pagina nascosta «Impostazioni»**,
+che si apre toccando **6 volte di fila la scritta «Profilo»** (entro 4 secondi).
+Anche ogni impostazione nuova va messa lì, mai nel Profilo visibile.
+
+Nel Profilo visibile restano solo: il nome dell'autista, la riga sullo stato
+delle notifiche (senza tasti), il collegamento con l'ufficio, l'intestazione
+per la fattura ed Esci. Nella prova con i dati di esempio il Profilo resta
+com'è (con le anteprime).
 
 ---
 
@@ -22,10 +35,67 @@ Vanno caricati tutti nella radice del repository **autisti_prova** su GitHub
 | `README.md` | Questo file. |
 
 Dopo il caricamento: sul telefono chiudi del tutto l'app, aspetta 10 minuti e
-riaprila. In fondo al Profilo deve esserci «versione 1.15».
+riaprila. In fondo al Profilo deve esserci «versione 1.18».
 
-Questa versione va insieme al **servizio notifiche 1.9** (Cloudflare) e
-all'**app Presenze 1.11** (che non cambia).
+Questa versione va insieme al **servizio notifiche 1.11** (Cloudflare),
+all'**app Presenze 1.11** (che non cambia) e alla **Diagnostica 1.1**.
+
+---
+
+## Modifiche della versione 1.18
+
+- **Il telefono dice all'ufficio che versione ha.** Il file del telefono nella
+  cartella Dropbox (`/telefoni/<telefono>.json`) ora contiene anche: la versione
+  dell'app, l'ora dell'ultimo aggiornamento riuscito, l'ultimo invio all'ufficio,
+  quante cose restano da inviare e l'ultimo problema (se c'è).
+- Si scrive quando l'app si apre, dopo il primo aggiornamento riuscito (o dopo
+  il primo problema) e di nuovo quando l'app torna davanti dopo almeno 3 ore.
+- Serve alla **Diagnostica 1.1**: prima la versione si capiva solo dalle
+  conferme dei riposi, che partono solo quando cambia qualcosa, e un telefono
+  aggiornato poteva risultare «vecchio».
+- **Contiene anche la 1.16 e la 1.17**, che su GitHub non erano mai state
+  caricate (online c'era ancora la 1.15): animazione «insieme» senza il disegno
+  del pullman e tutte le impostazioni nella pagina nascosta (6 tocchi su
+  «Profilo»).
+- Nient'altro cambia. Servizio notifiche: resta la 1.11. Presenze: resta la 1.11.
+- Prove: 47 controlli (i 41 di «insieme» più 6 sul file del telefono: versione,
+  aggiornamento riuscito, problema scritto e poi tolto, nessuna scrittura
+  inutile, nuova apertura dopo 3 ore), 36 di sicurezza e 45 del giro con
+  Presenze, tutti superati.
+
+---
+
+## Modifiche della versione 1.17
+
+- **Impostazioni tutte nascoste.** Nella pagina «Impostazioni» (6 tocchi su
+  «Profilo») ora ci sono: **Notifiche** (attivarle, avviso del servizio di
+  domani con l'orario, notifica di prova, spegnerle), **Animazione di apertura**
+  (dopo quanti minuti, «Guardala adesso»), **Lettura automatica degli
+  scontrini** (chiave Gemini) e **Icona sulla schermata Home**.
+- **Profilo visibile:** nome, una riga «Notifiche: attive» oppure «Notifiche:
+  non attive · chiedi in ufficio» («bloccate dal telefono · chiedi in ufficio»
+  se il telefono le blocca), collegamento con l'ufficio (con «Aggiorna e invia
+  adesso»), intestazione per la fattura, Esci.
+- Sui telefoni nuovi le notifiche le attiva chi prepara il telefono in ufficio,
+  con i 6 tocchi.
+- Il riquadro «Metti l'app sulla schermata Home» nella pagina Servizi resta: è
+  un invito e apre direttamente le Impostazioni.
+- Nient'altro cambia. Servizio notifiche: resta la 1.9. Presenze: resta la 1.11.
+- Prove: 41 controlli (i 33 di «insieme» più 8 sul nuovo Profilo e sulle
+  Impostazioni nascoste), 36 di sicurezza e 45 del giro con Presenze, tutti
+  superati.
+
+---
+
+## Modifiche della versione 1.16
+
+- Nell'animazione «insieme» non c'è più il disegno del pullman: restano i
+  tesserini degli autisti (nome, cognome e posti del pullman), uniti da un
+  trattino giallo. «Sullo stesso pullman» o «Ognuno con il suo pullman» lo dice
+  la scritta sotto. La scena è più bassa, quindi tutto resta al centro.
+- Nient'altro cambia. Servizio notifiche: resta la 1.9. Presenze: resta la 1.11.
+- Prove: 33 controlli su «insieme» (compreso «niente disegno del pullman»),
+  36 di sicurezza e 45 del giro con Presenze, tutti superati.
 
 ---
 
