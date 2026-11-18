@@ -1,6 +1,6 @@
 # La Terra Autisti – App dell'autista
 
-**Versione 1.18** — 11 novembre 2026
+**Versione 1.19** — 18 novembre 2026
 
 Il numero di versione è scritto anche nell'app, in fondo alla pagina **Profilo**:
 serve a controllare quale versione è arrivata sul telefono dopo un aggiornamento.
@@ -35,10 +35,48 @@ Vanno caricati tutti nella radice del repository **autisti_prova** su GitHub
 | `README.md` | Questo file. |
 
 Dopo il caricamento: sul telefono chiudi del tutto l'app, aspetta 10 minuti e
-riaprila. In fondo al Profilo deve esserci «versione 1.18».
+riaprila. In fondo al Profilo deve esserci «versione 1.19».
 
-Questa versione va insieme al **servizio notifiche 1.11** (Cloudflare),
-all'**app Presenze 1.11** (che non cambia) e alla **Diagnostica 1.1**.
+Questa versione va insieme al **servizio notifiche 1.12** (Cloudflare),
+all'**app Presenze 1.11** (che non cambia) e alla **Diagnostica 1.1** (che non cambia).
+
+---
+
+## Modifiche della versione 1.19
+
+**Nuove regole per «insieme»** (decise dall'ufficio il 18 novembre 2026).
+
+- **Stesso pullman**: come prima, più autisti nello stesso foglio di servizio.
+- **Ognuno con il suo pullman**: fogli diversi che, letti dal **foglio di servizio
+  completo** (il PDF, non più l'anteprima dell'itinerario), hanno:
+  1. stesso cliente;
+  2. stessi giorni;
+  3. stessa ora di partenza;
+  4. stessa prima tappa (il punto di carico);
+  5. stesse destinazioni, cioè le altre tappe senza contare:
+     - le fermate di carico in più all'inizio (tappe con l'orario **entro
+       un'ora** dalla partenza, per esempio «ore 07:30 Coffa»);
+     - le soste lungo il percorso;
+     - la partenza per il rientro.
+- Nelle tappe non contano gli orari, le maiuscole, gli accenti e la punteggiatura.
+  Nei tour di più giorni si confronta il programma giorno per giorno.
+- Due pullman che vanno in destinazioni diverse **non sono insieme**, anche se
+  l'anteprima dell'itinerario è uguale. Con ora o punto di partenza diversi
+  (per esempio l'Outlet dell'8 novembre) non sono insieme.
+- Il telefono legge il PDF di un collega **solo** se il suo servizio ha stesso
+  cliente, giorni e ora; non lo conserva: delle tappe tiene solo un codice.
+  Il proprio PDF resta sul telefono come prima.
+- Finché non riesce a leggere i PDF (per esempio senza rete) non dice «insieme».
+- L'avviso «insieme» è solo nell'app (animazione e scritta «Con …» nella scheda
+  del servizio): dal **servizio notifiche 1.12** la notifica del foglio nuovo non
+  lo dice più.
+- Prove: la regola sui testi veri dei fogli di novembre (Randazzo 8/11 insieme
+  anche con il carico a Coffa; Ist. Comprensivo A. Amore 10/11 insieme; Comune
+  1/11 Campo e Giummarra insieme, Accardi no; Comune 2/11 no; Outlet 8/11 no;
+  tour e transfer), 13 controlli; 49 controlli nell'app con PDF di prova
+  (destinazione diversa con la stessa anteprima, carico entro un'ora, fermata
+  dopo più di un'ora, PDF dei colleghi non conservati, notifiche senza
+  «insieme»), 36 di sicurezza e 45 del giro con Presenze: tutti superati.
 
 ---
 

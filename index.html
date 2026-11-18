@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- La Terra Autisti - versione 1.18 (collegata alla cartella Dropbox "Autisti La Terra") - 11 novembre 2026 -->
+<!-- La Terra Autisti - versione 1.19 (collegata alla cartella Dropbox "Autisti La Terra") - 18 novembre 2026 -->
 <html lang="it">
 <head>
 <meta charset="utf-8">
@@ -689,7 +689,7 @@ nav.tabs .pall{position:absolute;top:6px;left:calc(50% + 9px);min-width:19px;hei
     <div class="gate-body" id="gateChi"></div>
     <div class="gate-body" id="gatePw" hidden></div>
   </div>
-  <p class="gate-ver">La Terra Autisti · versione 1.18</p>
+  <p class="gate-ver">La Terra Autisti · versione 1.19</p>
 </div>
 <input type="file" id="fotoInput" accept="image/*" capture="environment" hidden>
 
@@ -1660,7 +1660,7 @@ function renderProfilo(){
   if(reale&&profiloImpostazioni){
     $("v-profilo").innerHTML='<div style="margin-bottom:6px"><button class="indietro-p" data-az="imp-chiudi">‹ Profilo</button></div><h2>Impostazioni</h2><p class="sub">Da usare solo se te lo chiede l\'ufficio.</p>'+
       htmlNotifiche()+htmlApertura()+htmlLettura()+htmlHome()+ // dalla 1.17: TUTTE le impostazioni stanno qui
-      '<p class="versione">La Terra Autisti · versione 1.18</p>';
+      '<p class="versione">La Terra Autisti · versione 1.19</p>';
     return;
   }
   $("v-profilo").innerHTML='<h2 class="prof-tit" data-az="prof-tocco">Profilo</h2>'+
@@ -1681,7 +1681,7 @@ function renderProfilo(){
       '<p class="rx-prove-t">Riposo di domani</p><div class="campi rx-prove" style="padding-top:6px">'+["inverno","primavera","estate","autunno"].map(k=>'<button class="btn ghost" data-az="scena-prova" data-s="'+k+'">'+IC_STAGIONE[k]+' '+NOMI_STAGIONE[k]+'</button>').join("")+'<button class="btn ghost" data-az="relax-prova" data-t="RM">🔧 Rimessa</button><button class="btn ghost" data-az="insieme-prova" data-v="stesso">👥 Insieme, stesso pullman</button><button class="btn ghost" data-az="insieme-prova" data-v="separati">🚌 Insieme, pullman separati</button></div>'+
       '<p class="rx-prove-t">Feste</p><div class="campi rx-prove" style="padding-top:6px">'+Object.keys(FESTE).map(k=>'<button class="btn ghost" data-az="scena-prova" data-s="'+k+'">'+FESTE[k].ic+' '+FESTE[k].nome+'</button>').join("")+'</div></div>')+
     '<button class="btn ghost" data-az="esci">Esci</button>'+
-    (reale?'<p class="versione">La Terra Autisti · versione 1.18</p>':'<p class="versione">La Terra Autisti · versione 1.18 · prova<br>Nomi, clienti e importi sono inventati.</p>');
+    (reale?'<p class="versione">La Terra Autisti · versione 1.19</p>':'<p class="versione">La Terra Autisti · versione 1.19 · prova<br>Nomi, clienti e importi sono inventati.</p>');
 }
 
 /* ============ accesso: chi sei, password, resta collegato ============ */
@@ -1885,24 +1885,29 @@ function soloMio(j,c){
   return {ridotto:true,autistiId:[],dal:j.dal,al:j.al,ritirato:!!j.ritirato,busta:b,mezzo:m};
 }
 function normR(){
-  ["fogli","ufficio","spese","speseRev","letti","inviato","mesi","recupero","pastiRev","visti","insieme"].forEach(k=>{if(!R[k]||typeof R[k]!=="object")R[k]={};});
+  ["fogli","ufficio","spese","speseRev","letti","inviato","mesi","recupero","pastiRev","visti","insieme","tappe"].forEach(k=>{if(!R[k]||typeof R[k]!=="object")R[k]={};});
   Object.keys(R.fogli).forEach(c=>{const f=R.fogli[c];if(f&&f.j&&!f.j.ridotto&&!mioFoglio(f.j))f.j=soloMio(f.j,c);}); // pulizia dei fogli degli altri salvati dalle versioni precedenti
 }
 const speseVuote=()=>({righe:[],kmPartenza:"",kmRientro:"",note:"",consegnata:null});
 // ---- dalla 1.14: più autisti nello stesso servizio ----
 // Stesso pullman = più autisti nello stesso foglio (la busta la gestisce il primo dell'elenco dell'Agenda).
-// Pullman separati = fogli diversi con stesso cliente, stessi giorni, stessa ora di partenza e stesso luogo di carico;
-// il luogo di carico è la parte «da …» dell'itinerario (o il campo luogoCarico, se un giorno l'Agenda lo manderà).
+// Pullman separati (dalla 1.19, regola decisa dall'ufficio il 18/11/2026): fogli diversi, letti dal foglio di servizio
+// completo (il PDF, non l'anteprima dell'itinerario), con stesso cliente, stessi giorni, stessa ora di partenza,
+// stessa prima tappa (il punto di carico) e stesse destinazioni. Le destinazioni sono le altre tappe, senza contare:
+// le fermate di carico in più all'inizio (tappe con l'orario entro un'ora dalla partenza), le soste lungo il percorso
+// e la partenza per il rientro. Non contano gli orari scritti nelle tappe, le maiuscole, gli accenti e la punteggiatura.
+// Tour di più giorni: si confronta il programma giorno per giorno. Finché il PDF non è letto, «insieme» non si dice.
 const normT=t=>String(t||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
-function luogoCarico(j){const x=j&&(j.luogoCarico||j.carico);if(x)return normT(x);const it=normT(j&&j.itinerario),m=/^da (.+?)(?: x | per | a |$)/.exec(it+" ");return m?m[1].trim():it;}
 function hashT(t){let a=0xdeadbeef,b=0x41c6ce57;for(let i=0;i<t.length;i++){const c=t.charCodeAt(i);a=Math.imul(a^c,2654435761);b=Math.imul(b^c,1597334677);}
   a=Math.imul(a^(a>>>16),2246822507)^Math.imul(b^(b>>>13),3266489909);b=Math.imul(b^(b>>>16),2246822507)^Math.imul(a^(a>>>13),3266489909);return (b>>>0).toString(36)+(a>>>0).toString(36);}
 const giornoOk=g=>/^\d{4}-\d\d-\d\d$/.test(g||"");
-// la chiave del servizio è cifrata: sul telefono non restano cliente e itinerario dei fogli degli altri
-function chiaveGruppo(j){if(!j||!normT(j.cliente)||!giornoOk(j.dal))return "";return hashT([normT(j.cliente),j.dal,giornoOk(j.al)?j.al:j.dal,String(j.ora||"").trim(),luogoCarico(j)].join("|"));}
-// dei fogli degli altri si tiene solo: chiave, nomi degli autisti e pullman (posti)
-function infoGruppo(j){if(!j||j.ritirato)return null;const k=chiaveGruppo(j);if(!k)return null;
-  return {k:k,nomi:(Array.isArray(j.autisti)?j.autisti:[]).slice(0,8).map(x=>String(x).slice(0,60)),ids:(Array.isArray(j.autistiId)?j.autistiId:[]).slice(0,8).map(String),mezzo:String((j.mezzo&&j.mezzo.nome)||"").slice(0,30)};}
+// prima scrematura senza PDF: stesso cliente, stessi giorni, stessa ora. La chiave è cifrata: sul telefono non restano
+// cliente e itinerario dei fogli degli altri
+function chiaveBase(j){if(!j||!normT(j.cliente)||!giornoOk(j.dal))return "";return hashT([normT(j.cliente),j.dal,giornoOk(j.al)?j.al:j.dal,String(j.ora||"").trim()].join("|"));}
+const revPdf=j=>String((j&&j.pdf&&j.pdf.rev)||(Number(j&&j.inviato&&j.inviato.n)||1));
+// dei fogli degli altri si tiene solo: chiave, revisione del PDF, nomi degli autisti e pullman (posti)
+function infoGruppo(j){if(!j||j.ritirato)return null;const k=chiaveBase(j);if(!k)return null;
+  return {v:2,kb:k,pdfRev:revPdf(j),nomi:(Array.isArray(j.autisti)?j.autisti:[]).slice(0,8).map(x=>String(x).slice(0,60)),ids:(Array.isArray(j.autistiId)?j.autistiId:[]).slice(0,8).map(String),mezzo:String((j.mezzo&&j.mezzo.nome)||"").slice(0,30)};}
 const nomeDa=t=>{const p=String(t||"").trim().split(/\s+/);return p.length>1?p[p.length-1]+" "+p.slice(0,-1).join(" "):String(t||"").trim();}; // «Calabrese Saro» → «Saro Calabrese»
 const primoNome=t=>String(t||"").trim().split(/\s+/).pop()||"";
 // con lo stesso pullman la busta la gestisce il primo autista dell'elenco: gli altri la vedono soltanto
@@ -1910,13 +1915,87 @@ const nonCapo=j=>!!(j&&Array.isArray(j.autistiId)&&j.autistiId.length>1&&j.autis
 function compagniDi(c,j){
   const io=x=>idUguale(x,MIO_ID),ids=Array.isArray(j.autistiId)?j.autistiId.map(String):[],nomi=Array.isArray(j.autisti)?j.autisti.map(String):[];
   const stessi=[],separati=[];ids.forEach((id,i)=>{if(!io(id))stessi.push({nome:nomi[i]||id,id:id});});
-  const k=chiaveGruppo(j);
-  if(k)for(const c2 of Object.keys(R.fogli)){
-    if(c2===c)continue;const f=R.fogli[c2],g=f&&(f.g||(f.j&&mioFoglio(f.j)?infoGruppo(f.j):null));if(!g||g.k!==k)continue;
+  // dalla 1.19: pullman separati solo se le tappe lette dai due PDF coincidono (stessa impronta)
+  const kb=chiaveBase(j),mt=R.tappe&&R.tappe[c];
+  if(kb&&mt&&mt.k&&mt.rev===revPdf(j))for(const c2 of Object.keys(R.fogli)){
+    if(c2===c)continue;const f=R.fogli[c2],g=f&&(f.g||(f.j&&mioFoglio(f.j)?infoGruppo(f.j):null));if(!g||g.kb!==kb)continue;
+    const t2=R.tappe[c2];if(!t2||!t2.k||t2.rev!==g.pdfRev||t2.k!==mt.k)continue;
     g.ids.forEach((id,i)=>{if(!io(id)&&!stessi.some(x=>idUguale(x.id,id))&&!separati.some(x=>idUguale(x.id,id)))separati.push({nome:g.nomi[i]||id,id:id,mezzo:g.mezzo});});
   }
   if(!stessi.length&&!separati.length)return null;
   return {stessi:stessi,separati:separati,firma:stessi.map(x=>"s:"+idPulito(x.id)).concat(separati.map(x=>"p:"+idPulito(x.id))).sort().join(",")};
+}
+// ---- dalla 1.19: le tappe del foglio di servizio completo (il testo del PDF) ----
+const ORA_RE=/\bore\s*(\d{1,2})[:.,](\d{2})\b/i;
+function minutiDa(t){t=String(t||"");const m=ORA_RE.exec(t)||/^\s*(\d{1,2})[:.](\d{2})\s*$/.exec(t);return m?Number(m[1])*60+Number(m[2]):null;}
+// testo di una pagina del PDF → righe (pezzi alla stessa altezza, da sinistra a destra)
+function righeDa(items){
+  const r=[];
+  for(const it of items){if(!it||typeof it.str!=="string"||!it.str.trim())continue;const tr=it.transform||[1,0,0,1,0,0],y=tr[5],x=tr[4];
+    let riga=null;for(const q of r)if(Math.abs(q.y-y)<3){riga=q;break;}if(!riga){riga={y:y,p:[]};r.push(riga);}riga.p.push({x:x,s:it.str,w:Number(it.width)||0});}
+  r.sort((a,b)=>b.y-a.y);
+  return r.map(q=>{q.p.sort((a,b)=>a.x-b.x);let t="",fine=null;for(const p of q.p){if(t&&(fine===null||p.x-fine>1))t+=" ";t+=p.s;fine=p.w?p.x+p.w:null;}return t.replace(/\s+/g," ").trim();}).filter(Boolean);
+}
+// le tappe: righe «1) …» (o «1° giorno …: …» nei tour) fino a «Saldo da ricevere»; una riga che va a capo resta nella sua tappa
+function tappeDa(righe){
+  const out=[];let cur=null;
+  for(const l of righe){
+    if(/^saldo da ricevere\b/i.test(l))break;
+    const g=/^(\d{1,2})\s*°\s*giorno\b[^:]*:\s*(.*)$/i.exec(l);if(g){cur={t:g[2],giorno:true};out.push(cur);continue;}
+    const m=/^(\d{1,2})\s*\)\s*(.*)$/.exec(l);if(m){cur={t:m[2]};out.push(cur);continue;}
+    if(cur)cur.t+=" "+l;
+  }
+  return out;
+}
+// impronta delle tappe: punto di carico + destinazioni (cifrata: del PDF di un collega non resta il testo)
+function improntaTappe(ora,righe){
+  const tp=tappeDa(righe);if(!tp.length)return "";
+  const pulita=t=>normT(String(t||"").replace(/(?:\b(?:dalle|alle|fino alle|entro le)\s+)?\bore\s*\d{1,2}[:.,]\d{2}\b/gi," "));
+  let carico="",dest=[];
+  if(tp.some(t=>t.giorno)){carico=pulita(tp[0].t.split(">")[0]);dest=tp.map(t=>pulita(t.t));} // tour: giorno per giorno
+  else{
+    carico=pulita(tp[0].t);
+    const p=minutiDa(ora)!=null?minutiDa(ora):minutiDa(tp[0].t);let i=1;
+    for(;i<tp.length;i++){const m=minutiDa(tp[i].t);if(m==null||p==null||m<p||m>p+60)break;} // fermate di carico in più (entro un'ora)
+    for(;i<tp.length;i++){const t=pulita(tp[i].t);if(!t||/^sosta\b/.test(t)||/\brientro\b/.test(t))continue;dest.push(t);} // niente soste né rientro
+  }
+  if(!carico)return "";
+  return hashT([carico].concat([...new Set(dest.filter(Boolean))].sort()).join("|"));
+}
+async function righeDelPdf(buf){
+  const lib=await pdfjs(),doc=await lib.getDocument({data:new Uint8Array(buf.slice(0)),isEvalSupported:false}).promise;let out=[];
+  try{for(let i=1;i<=doc.numPages;i++){const pg=await doc.getPage(i),tc=await pg.getTextContent();out=out.concat(righeDa(tc.items||[]));}}finally{try{doc.destroy();}catch(_){}}
+  return out;
+}
+// si leggono solo i PDF che servono: fogli con stesso cliente, giorni e ora di un foglio dell'autista (al massimo 6 per volta).
+// Il proprio PDF resta sul telefono (serve anche per aprirlo); quello di un collega si legge e non si conserva.
+async function aggiornaTappe(){
+  if(!R.tappe||typeof R.tappe!=="object")R.tappe={};
+  const gruppo=c=>{const f=R.fogli[c];return f?(f.g||(f.j&&mioFoglio(f.j)?infoGruppo(f.j):null)):null;};
+  const ore={};Object.keys(R.fogli).forEach(c=>{const f=R.fogli[c];if(f&&mioFoglio(f.j)){const kb=chiaveBase(f.j);if(kb)ore[kb]=String(f.j.ora||"");}});
+  const perBase={};Object.keys(R.fogli).forEach(c=>{const g=gruppo(c);if(g&&g.kb&&ore[g.kb]!==undefined)(perBase[g.kb]=perBase[g.kb]||[]).push(c);});
+  const servono=new Set();Object.values(perBase).forEach(l=>{if(l.length>1)l.forEach(c=>servono.add(c));});
+  let cambiato=false;
+  Object.keys(R.tappe).forEach(c=>{if(!servono.has(c)){delete R.tappe[c];cambiato=true;}});
+  const daLeggere=[...servono].filter(c=>{const g=gruppo(c),t=R.tappe[c];return g&&!(t&&t.rev===g.pdfRev);}).slice(0,6);
+  if(!daLeggere.length)return cambiato;
+  try{await pdfjs();}catch(_){return cambiato;} // lettore dei PDF non disponibile ora (senza rete la prima volta): si riprova dopo
+  for(const c of daLeggere){
+    const g=gruppo(c),mio=!!(R.fogli[c]&&mioFoglio(R.fogli[c].j));
+    try{
+      let buf=null;
+      if(mio)buf=await pdfDel({cartella:c,pdfRev:g.pdfRev});
+      else{const d=await scarica(c+"/foglio.pdf");buf=d&&d.buf;}
+      if(!buf)continue;
+      R.tappe[c]={rev:g.pdfRev,k:improntaTappe(ore[g.kb],await righeDelPdf(buf))};cambiato=true;
+    }catch(e){
+      if(e&&e.code==="bloccato")throw e;
+      if(e&&(e.code==="rete"||e.code==="manca"||e.code==="api"))continue; // PDF non ancora arrivato, niente rete o Dropbox occupato: al prossimo aggiornamento
+      R.tappe[c]={rev:g.pdfRev,k:""};cambiato=true;           // PDF illeggibile: niente «insieme» finché non cambia
+    }
+  }
+  if(cambiato)salvaR();
+  return cambiato;
 }
 const elencoE=a=>a.length<2?(a[0]||""):a.slice(0,-1).join(", ")+" e "+a[a.length-1];
 function testoCon(ins){
@@ -1995,7 +2074,7 @@ function pulisciVisti(){
   if(!R)return;if(!R.visti||typeof R.visti!=="object")R.visti={};const lim=piu(OGGI,-7);
   Object.keys(R.visti).forEach(g=>{const v=R.visti[g];if(!/^\d{4}-\d\d-\d\d$/.test(g)||g<lim||!v||(v.c!=="RI"&&v.c!=="RM"))delete R.visti[g];});
 }
-function vistiJson(){pulisciVisti();const g={};Object.keys(R.visti).sort().forEach(k=>{g[k]={c:R.visti[k].c,at:String(R.visti[k].at||"")};});return {v:1,autista:conn.a,autistaId:MIO_ID,app:"1.18",giorni:g};}
+function vistiJson(){pulisciVisti();const g={};Object.keys(R.visti).sort().forEach(k=>{g[k]={c:R.visti[k].c,at:String(R.visti[k].at||"")};});return {v:1,autista:conn.a,autistaId:MIO_ID,app:"1.19",giorni:g};}
 function registraVisto(){
   const f=fermoAperto;if(!f||!S||S.dati!=="reale"||!R||!conn)return;
   pulisciVisti();const c=f.t==="RM"?"RM":"RI",v=R.visti[f.g];
@@ -2087,7 +2166,7 @@ let aggiornando=null,aggiornandoDal=0,giroAgg=0,telefonoScritto=false;
 // Si scrive all'apertura, dopo il primo aggiornamento riuscito (o dopo il primo problema) e di nuovo dopo 3 ore di app in disparte.
 let aperturaAt=new Date().toISOString(),telefonoOk=false,telefonoErr=false,telefonoAt=0;
 function telefonoJson(){
-  return {v:1,autista:conn.a,collegatoAt:conn.at,ultimoAccesso:aperturaAt,dispositivo:etichettaDispositivo(),app:"1.18",
+  return {v:1,autista:conn.a,collegatoAt:conn.at,ultimoAccesso:aperturaAt,dispositivo:etichettaDispositivo(),app:"1.19",
     aggiornatoAt:(R&&R.ultimo)||"",ultimoInvio:(R&&R.ultimoInvio)||"",daInviare:R?daInviare():0,
     problema:ultimoErrore?{at:String(ultimoErrore.at||""),t:String(ultimoErrore.t||"").slice(0,160)}:null};
 }
@@ -2113,7 +2192,7 @@ function aggiorna(){
       for(const c of Object.keys(R.fogli))if(!cart[c]||!cart[c]["foglio.json"]){delete R.fogli[c];cambiato=true;}
       for(const c of Object.keys(cart)){
         const f=cart[c];if(!f["foglio.json"])continue;
-        if(!R.fogli[c]||R.fogli[c].rev!==f["foglio.json"]||(R.fogli[c].g===undefined&&!mioFoglio(R.fogli[c].j))){/* dalla 1.14: i fogli degli altri si rileggono una volta per sapere chi è insieme */const x=await scaricaJson(c+"/foglio.json");if(x&&x.j){R.fogli[c]={rev:x.rev,j:soloMio(x.j,c),g:mioFoglio(x.j)?null:infoGruppo(x.j)};cambiato=true;}}
+        if(!R.fogli[c]||R.fogli[c].rev!==f["foglio.json"]||(R.fogli[c].g===undefined&&!mioFoglio(R.fogli[c].j))||(R.fogli[c].g&&R.fogli[c].g.v!==2)){/* dalla 1.14: i fogli degli altri si rileggono una volta per sapere chi è insieme */const x=await scaricaJson(c+"/foglio.json");if(x&&x.j){R.fogli[c]={rev:x.rev,j:soloMio(x.j,c),g:mioFoglio(x.j)?null:infoGruppo(x.j)};cambiato=true;}}
         const j=R.fogli[c]&&R.fogli[c].j;if(!mioFoglio(j))continue;
         if(f["ufficio.json"]&&(!R.ufficio[c]||R.ufficio[c].rev!==f["ufficio.json"])){const x=await scaricaJson(c+"/ufficio.json");if(x){R.ufficio[c]={rev:x.rev,j:x.j};cambiato=true;}}
         const lt="letto_"+MIO_ID+".json";
@@ -2145,10 +2224,11 @@ function aggiorna(){
       }
       const rp=await scaricaJson("/telefoni/presenze/"+MIO_ID+".json"),nuoviRiposi=rp&&rp.j&&rp.j.giorni&&typeof rp.j.giorni==="object"?rp.j.giorni:{};
       if(impronta(nuoviRiposi)!==impronta(R.riposi||{})){R.riposi=nuoviRiposi;cambiato=true;setTimeout(()=>{const f=fermoDaMostrare();if(f&&ieriChiesto&&chiaveFermo(f)!==fermoVisto&&$("gate").hidden&&!$("modale").classList.contains("open"))mostraFermo(f);},400);}
+      try{if(await aggiornaTappe())cambiato=true;}catch(e){if(e&&e.code==="bloccato")throw e;} // dalla 1.19: tappe dai PDF per «insieme»
       R.ultimo=new Date().toISOString();salvaR();
       if(cambiato&&S&&S.dati==="reale"){S.servizi=costruisciServizi();togliCrocetteSenzaFoglio();ridisegna();if(ieriChiesto&&insiemeDaMostrare())setTimeout(insiemeQuandoLibero,600);}
       await invia();
-      if(!telefonoOk&&conn){telefonoOk=true;try{await scriviTelefono();}catch(_){}} // dalla 1.18: «aggiornato, versione 1.18» (prima delle notifiche, che possono metterci qualche secondo)
+      if(!telefonoOk&&conn){telefonoOk=true;try{await scriviTelefono();}catch(_){}} // dalla 1.18: «aggiornato, versione 1.19» (prima delle notifiche, che possono metterci qualche secondo)
       await controllaPush();
       statoSync("aggiornato alle "+oraBreve(),"ok");
     }catch(e){gestisciErrore(e);if(conn&&!telefonoErr&&!(e&&e.code==="bloccato")){telefonoErr=true;scriviTelefono().catch(()=>{});}} // dalla 1.18: l'ufficio vede il problema
