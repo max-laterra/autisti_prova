@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- La Terra Autisti - versione 1.21 (collegata alla cartella Dropbox "Autisti La Terra") - 20 novembre 2026 -->
+<!-- La Terra Autisti - versione 1.22 (collegata alla cartella Dropbox "Autisti La Terra") - 20 novembre 2026 -->
 <html lang="it">
 <head>
 <meta charset="utf-8">
@@ -726,7 +726,7 @@ nav.tabs .pall{position:absolute;top:6px;left:calc(50% + 9px);min-width:19px;hei
     <div class="gate-body" id="gateChi"></div>
     <div class="gate-body" id="gatePw" hidden></div>
   </div>
-  <p class="gate-ver">La Terra Autisti · versione 1.21</p>
+  <p class="gate-ver">La Terra Autisti · versione 1.22</p>
 </div>
 <input type="file" id="fotoInput" accept="image/*" capture="environment" hidden>
 
@@ -1717,7 +1717,7 @@ function renderProfilo(){
     $("v-profilo").innerHTML='<div style="margin-bottom:6px"><button class="indietro-p" data-az="imp-chiudi">‹ Profilo</button></div><h2>Impostazioni</h2><p class="sub">Da usare solo se te lo chiede l\'ufficio.</p>'+
       htmlNotifiche()+htmlApertura()+htmlLettura()+htmlHome()+ // dalla 1.17: TUTTE le impostazioni stanno qui
       '<div class="riq"><h4>Esci dall\'app</h4><div class="intest">Dopo, per rientrare serve di nuovo la password. Da usare solo se te lo chiede l\'ufficio.</div><div class="campi"><button class="btn ghost" data-az="esci">Esci</button></div></div>'+ // dalla 1.20
-      '<p class="versione">La Terra Autisti · versione 1.21</p>';
+      '<p class="versione">La Terra Autisti · versione 1.22</p>';
     return;
   }
   $("v-profilo").innerHTML='<h2 class="prof-tit" data-az="prof-tocco">Profilo</h2>'+
@@ -1738,7 +1738,7 @@ function renderProfilo(){
       '<p class="rx-prove-t">Riposo di domani</p><div class="campi rx-prove" style="padding-top:6px">'+["inverno","primavera","estate","autunno"].map(k=>'<button class="btn ghost" data-az="scena-prova" data-s="'+k+'">'+IC_STAGIONE[k]+' '+NOMI_STAGIONE[k]+'</button>').join("")+'<button class="btn ghost" data-az="relax-prova" data-t="RM">🔧 Rimessa</button><button class="btn ghost" data-az="insieme-prova" data-v="stesso">👥 Insieme, stesso pullman</button><button class="btn ghost" data-az="insieme-prova" data-v="separati">🚌 Insieme, pullman separati</button></div>'+
       '<p class="rx-prove-t">Feste</p><div class="campi rx-prove" style="padding-top:6px">'+Object.keys(FESTE).map(k=>'<button class="btn ghost" data-az="scena-prova" data-s="'+k+'">'+FESTE[k].ic+' '+FESTE[k].nome+'</button>').join("")+'</div></div>')+
     (reale?"":'<button class="btn ghost" data-az="esci">Esci</button>')+ // dalla 1.20: sul telefono collegato «Esci» sta nella pagina nascosta
-    (reale?'<p class="versione">La Terra Autisti · versione 1.21</p>':'<p class="versione">La Terra Autisti · versione 1.21 · prova<br>Nomi, clienti e importi sono inventati.</p>');
+    (reale?'<p class="versione">La Terra Autisti · versione 1.22</p>':'<p class="versione">La Terra Autisti · versione 1.22 · prova<br>Nomi, clienti e importi sono inventati.</p>');
 }
 
 /* ============ accesso: chi sei, password, resta collegato ============ */
@@ -1874,7 +1874,7 @@ async function token(forza){
   let r;
   try{r=await fetchT(DBX_API+"/oauth2/token",{method:"POST",body:new URLSearchParams({grant_type:"refresh_token",refresh_token:conn.r,client_id:conn.k})},30000);}
   catch(_){throw {code:"rete"};}
-  if(r.status===400||r.status===401)throw {code:"bloccato"}; // l'ufficio ha bloccato il telefono
+  if(r.status===400||r.status===401){let t="";try{t=await r.text();}catch(_){}if(/invalid_grant|invalid_client/.test(t))throw {code:"bloccato"};throw {code:"rete"};} // l'ufficio ha bloccato il telefono (dalla 1.22 solo se Dropbox lo dice chiaramente)
   if(!r.ok)throw {code:"rete"};
   const j=await r.json();tok={a:j.access_token,exp:Date.now()+((Number(j.expires_in)||14400)-120)*1000};return tok.a;
 }
@@ -1925,7 +1925,17 @@ async function idbSet(k,v){try{const db=await entro(idb(),6000);await entro(new 
 
 // ---- stato dell'autista collegato (sul telefono) ----
 function nuovoR(){return {push:null,fogli:{},ufficio:{},spese:{},speseRev:{},letti:{},inviato:{},mesi:{},recupero:{},pastiRev:{},visti:{},insieme:{},ultimo:null};}
-function salvaR(){if(R)scriviJ(STATO_K,R);}
+let memoriaPiena=false;
+function salvaR(){
+  if(!R||scriviJ(STATO_K,R))return;
+  // dalla 1.22: memoria dell'app piena. Le miniature degli scontrini delle buste consegnate e già mandate non servono più
+  // (le foto le ha l'ufficio): si tolgono e si riprova; se non basta, l'autista lo vede e avvisa l'ufficio
+  let tolte=0;
+  for(const c of Object.keys(R.spese||{})){const sp=R.spese[c];if(!sp||!sp.consegnata||!Array.isArray(sp.righe)||!(R.inviato&&R.inviato["spese:"+c]))continue;
+    for(const r of sp.righe)if(r&&r.foto&&!r.fotoLocale){r.foto=null;tolte++;}}
+  if(tolte&&scriviJ(STATO_K,R))return;
+  if(!memoriaPiena){memoriaPiena=true;setTimeout(()=>{try{toast("Memoria dell'app piena: avvisa l'ufficio");}catch(_){}},500);}
+}
 function destDi(j){
   if(j.evento)return String(j.evento);
   let p=String(j.itinerario||"").split(/\s+[–>→-]\s+|\s*[–>→]\s*/).map(x=>x.trim()).filter(Boolean);
@@ -2013,7 +2023,7 @@ function improntaTappe(ora,righe){
   else{
     carico=pulita(tp[0].t);
     const p=minutiDa(ora)!=null?minutiDa(ora):minutiDa(tp[0].t);let i=1;
-    for(;i<tp.length;i++){const m=minutiDa(tp[i].t);if(m==null||p==null||m<p||m>p+60)break;} // fermate di carico in più (entro un'ora)
+    for(;i<tp.length;i++){const m=minutiDa(tp[i].t);if(m==null||p==null||(m-p+1440)%1440>60)break;} // fermate di carico in più (entro un'ora)
     for(;i<tp.length;i++){const t=pulita(tp[i].t);if(!t||/^sosta\b/.test(t)||/\brientro\b/.test(t))continue;dest.push(t);} // niente soste né rientro
   }
   if(!carico)return "";
@@ -2131,7 +2141,7 @@ function pulisciVisti(){
   if(!R)return;if(!R.visti||typeof R.visti!=="object")R.visti={};const lim=piu(OGGI,-7);
   Object.keys(R.visti).forEach(g=>{const v=R.visti[g];if(!/^\d{4}-\d\d-\d\d$/.test(g)||g<lim||!v||(v.c!=="RI"&&v.c!=="RM"))delete R.visti[g];});
 }
-function vistiJson(){pulisciVisti();const g={};Object.keys(R.visti).sort().forEach(k=>{g[k]={c:R.visti[k].c,at:String(R.visti[k].at||"")};});return {v:1,autista:conn.a,autistaId:MIO_ID,app:"1.21",giorni:g};}
+function vistiJson(){pulisciVisti();const g={};Object.keys(R.visti).sort().forEach(k=>{g[k]={c:R.visti[k].c,at:String(R.visti[k].at||"")};});return {v:1,autista:conn.a,autistaId:MIO_ID,app:"1.22",giorni:g};}
 function registraVisto(){
   const f=fermoAperto;if(!f||!S||S.dati!=="reale"||!R||!conn)return;
   pulisciVisti();const c=f.t==="RM"?"RM":"RI",v=R.visti[f.g];
@@ -2231,7 +2241,7 @@ function proteggiDati(){
 }
 function segnaAttesaPw(){if(!conn)return;if(!chiedePwAt)chiedePwAt=new Date().toISOString();scriviTelefono().catch(()=>{});}
 function telefonoJson(){
-  return {v:1,autista:conn.a,collegatoAt:conn.at,ultimoAccesso:aperturaAt,dispositivo:etichettaDispositivo(),app:"1.21",
+  return {v:1,autista:conn.a,collegatoAt:conn.at,ultimoAccesso:aperturaAt,dispositivo:etichettaDispositivo(),app:"1.22",
     aggiornatoAt:(R&&R.ultimo)||"",ultimoInvio:(R&&R.ultimoInvio)||"",daInviare:R?daInviare():0,
     problema:ultimoErrore?{at:String(ultimoErrore.at||""),t:String(ultimoErrore.t||"").slice(0,160)}:null,
     chiedePassword:chiedePwAt||"",datiProtetti:datiProtetti};
@@ -2375,11 +2385,15 @@ async function mostraPdf(s){
 // appena lo schermo è libero mostra «Ehi, c'è un aggiornamento!», la scarica con l'avanzamento vero, la mette nella copia
 // dell'app sul telefono e si riavvia da sola; dopo il riavvio dice «Aggiornata!». La copia dell'app la tiene il service
 // worker (sw.js 1.2): così l'app si apre subito, anche senza campo.
-const VERSIONE_APP="1.21",AGG_K="laterra-autisti-aggiornata",APP_CACHE="laterra-app",SEGNO_VER=/La Terra Autisti - versione (\d+(?:\.\d+)+)/;
+const VERSIONE_APP="1.22",AGG_K="laterra-autisti-aggiornata",APP_CACHE="laterra-app",SEGNO_VER=/La Terra Autisti - versione (\d+(?:\.\d+)+)/;
 const FILE_APP=["index.html","manifest.webmanifest","img/bus.png","img/ruota.png","icons/icon-192.png","icons/icon-512.png","icons/icon-maskable-512.png","vendor/pdf.min.mjs","vendor/pdf.worker.min.mjs"];
 const BUS_SVG=(cls)=>'<svg class="'+cls+'" viewBox="0 0 1000 308" aria-hidden="true"><ellipse cx="500" cy="300" rx="470" ry="8" fill="rgba(0,0,0,.28)"/><image href="img/bus.png" width="1000" height="308"/>'+[216.15,698.46].map(x=>'<image class="ruota" href="img/ruota.png" x="'+x+'" y="210.77" width="92" height="92"/>').join("")+'</svg>';
 function piuNuova(a,b){const x=String(a||"").split(".").map(Number),y=String(b||"").split(".").map(Number);for(let i=0;i<Math.max(x.length,y.length);i++){const d=(x[i]||0)-(y[i]||0);if(d)return d>0;}return false;}
 let aggControllo=0,aggProposta="",aggInCorso=false,aggAttesa=null;
+// dalla 1.22: una versione che non si riesce a installare non si ripropone per 24 ore (niente riavvii all'infinito)
+const AGG_NO="laterra-autisti-agg-no";
+function segnaFallita(v){scrivi_ls(AGG_NO,JSON.stringify({v:String(v),at:Date.now()}));}
+function fallita(v){let x=null;try{x=JSON.parse(leggi_ls(AGG_NO)||"null");}catch(_){}return !!(x&&x.v===String(v)&&Date.now()-(Number(x.at)||0)<864e5);}
 async function versioneOnline(){
   const r=await entro(fetch("index.html?controllo="+Date.now(),{cache:"no-store"}),15000);if(!r.ok)return "";
   let t="";
@@ -2391,7 +2405,7 @@ async function controllaAggiornamento(forza){
   if(aggInCorso||DENTRO_CLAUDE||navigator.onLine===false||(!forza&&Date.now()-aggControllo<10*60000))return;
   aggControllo=Date.now();
   let v="";try{v=await versioneOnline();}catch(_){return;}
-  if(v&&piuNuova(v,VERSIONE_APP)){aggProposta=v;aggiornaQuandoLibero(0);}
+  if(v&&piuNuova(v,VERSIONE_APP)&&!fallita(v)){aggProposta=v;aggiornaQuandoLibero(0);}
 }
 // non si interrompe l'autista mentre scrive una spesa, fa una foto o guarda un foglio
 function schermoLiberoAgg(){return $("gate").hidden&&$("relax").hidden&&$("apertura").hidden&&!$("modale").classList.contains("open")&&!$("sheet").classList.contains("open")&&!aperto&&!inFoto&&!document.hidden;}
@@ -2411,26 +2425,35 @@ async function scaricaAggiornamento(v){
   const barra=box.querySelector(".ag-barra i"),perc=box.querySelector(".ag-perc"),bus=box.querySelector(".ag-bus");
   const mostra=p=>{p=Math.max(0,Math.min(1,p));barra.style.width=Math.round(p*100)+"%";perc.textContent=Math.round(p*100)+"%";bus.style.left="calc("+p.toFixed(3)+" * (100% - 150px))";};
   const inizio=Date.now();let ok=false;
+  // dalla 1.22: se il download si ferma per 20 secondi (o dura più di 2 minuti e mezzo) si rimanda: la schermata non resta mai bloccata
+  const ac=new AbortController();let fermo=0;const vivo=()=>{clearTimeout(fermo);fermo=setTimeout(()=>ac.abort(),20000);};const tutto=setTimeout(()=>ac.abort(),150000);vivo();
+  const leggiTutto=async rr=>{if(!(rr.body&&rr.body.getReader))return await rr.blob();const rd=rr.body.getReader(),pz=[];for(;;){const x=await rd.read();if(x.done)break;vivo();pz.push(x.value);}return new Blob(pz);};
   try{
     // 1. la pagina nuova, con l'avanzamento vero
-    const r=await entro(fetch("index.html?controllo="+Date.now(),{cache:"reload"}),90000);
+    const r=await fetch("index.html?controllo="+Date.now(),{cache:"reload",signal:ac.signal});
     if(!r.ok)throw new Error("risposta "+r.status);
-    const tot=Number(r.headers.get("Content-Length"))||2000000,pezzi=[];let n=0;
-    if(r.body&&r.body.getReader){const rd=r.body.getReader();for(;;){const x=await rd.read();if(x.done)break;pezzi.push(x.value);n+=x.value.length;mostra(.88*Math.min(1,n/tot));}}
+    const tot=Math.max(Number(r.headers.get("Content-Length"))||0,1900000),pezzi=[];let n=0;
+    if(r.body&&r.body.getReader){const rd=r.body.getReader();for(;;){const x=await rd.read();if(x.done)break;vivo();pezzi.push(x.value);n+=x.value.length;mostra(.88*Math.min(1,n/tot));}}
     else{const b=new Uint8Array(await r.arrayBuffer());pezzi.push(b);n=b.length;mostra(.88);}
     const pagina=new Blob(pezzi,{type:"text/html"}),m=SEGNO_VER.exec(await pagina.slice(0,4000).text());
     if(!m||!piuNuova(m[1],VERSIONE_APP))throw new Error("pagina non valida");
+    // dalla 1.22: dentro la pagina deve esserci la stessa versione (altrimenti dopo il riavvio ripartirebbe all'infinito)
+    if((await pagina.text()).indexOf('VERSIONE_APP="'+m[1]+'"')<0){segnaFallita(m[1]);throw new Error("versione non coerente");}
     v=m[1];
-    // 2. nella copia dell'app sul telefono, con gli altri file (pullman, lettore dei PDF…)
+    // 2. nella copia dell'app sul telefono, con gli altri file (pullman, lettore dei PDF…): dalla 1.22 prima si scarica
+    //    tutto e solo alla fine si mette nella copia (niente file di due versioni diverse insieme)
     if(window.caches){
+      const altri=FILE_APP.filter(f=>f!=="index.html"),presi=[];let k=0;
+      for(const f of altri){vivo();const rr=await fetch(f+"?controllo="+Date.now(),{cache:"reload",signal:ac.signal});if(!rr.ok)throw new Error(f+" "+rr.status);
+        presi.push([f,await leggiTutto(rr),rr.headers.get("Content-Type")||""]);mostra(.88+.1*(++k)/altri.length);}
       const c=await caches.open(APP_CACHE);
+      for(const [f,b,ct] of presi)await c.put(f,new Response(b,{headers:ct?{"Content-Type":ct}:{}}));
       await c.put("index.html",new Response(pagina,{headers:{"Content-Type":"text/html; charset=utf-8"}}));
-      const altri=FILE_APP.filter(f=>f!=="index.html");let k=0;
-      for(const f of altri){try{const rr=await entro(fetch(f+"?controllo="+Date.now(),{cache:"reload"}),30000);if(rr.ok)await c.put(f,rr);}catch(_){}mostra(.88+.12*(++k)/altri.length);}
     }
     try{const reg=navigator.serviceWorker&&await navigator.serviceWorker.getRegistration();if(reg)reg.update().catch(()=>{});}catch(_){}
     ok=true;
   }catch(e){ok=false;}
+  clearTimeout(fermo);clearTimeout(tutto);
   if(Date.now()-inizio<1800)await new Promise(f=>setTimeout(f,1800-(Date.now()-inizio))); // l'animazione si deve vedere
   if(ok){
     mostra(1);box.classList.add("fatto");box.querySelector(".ag-tit").textContent="Fatto!";box.querySelector(".ag-sub").textContent="Versione "+v+" scaricata · riavvio l'app";
@@ -2450,6 +2473,7 @@ function dopoAggiornamento(){
   if(!a||!a.a)return;
   if(piuNuova(a.a,VERSIONE_APP)&&(a.tent||0)<2&&Date.now()-(a.at||0)<600000){a.tent=(a.tent||0)+1;scrivi_ls(AGG_K,JSON.stringify(a));location.replace(location.pathname+"?v="+encodeURIComponent(a.a)+location.hash);return true;}
   scrivi_ls(AGG_K,null);
+  if(piuNuova(a.a,VERSIONE_APP))segnaFallita(a.a); // dalla 1.22: dopo due tentativi si apre ancora la versione vecchia
   if(a.a!==VERSIONE_APP)return;
   const box=$("aggiorna");box.innerHTML=htmlAggiorna("Aggiornata!","Ora hai la versione "+VERSIONE_APP,"Buon lavoro");box.hidden=false;
   box.querySelector(".ag-barra i").style.width="100%";box.querySelector(".ag-perc").textContent="✓";box.querySelector(".ag-bus").style.left="calc(.5 * (100% - 150px))";
@@ -2469,6 +2493,21 @@ async function mostraNovita(){
   const box=$("novita");
   box.innerHTML='<button type="button" aria-label="Chiudi" data-az="novita-chiudi">✕</button><b>📬 Arrivato mentre l\'app era chiusa</b><ul>'+recenti.map(x=>'<li>'+esc(x.t)+(x.b?'<span>'+esc(x.b)+'</span>':"")+'</li>').join("")+'</ul>';
   box.hidden=false;clearTimeout(box._t);box._t=setTimeout(()=>{box.hidden=true;},12000);
+}
+// dalla 1.22: all'apertura i fogli scaricati da sw.js all'arrivo della notifica entrano subito nell'app (anche senza campo)
+async function usaPrescaricati(){
+  if(!R||!conn)return false;
+  let db;try{db=await entro(idb(),6000);}catch(_){return false;}
+  const voci=await entro(new Promise(ok=>{const out=[];try{const q=db.transaction("kv").objectStore("kv").openCursor();
+    q.onsuccess=()=>{const c=q.result;if(!c)return ok(out);if(typeof c.key==="string"&&c.key.indexOf("pre:/servizi/")===0)out.push([c.key,c.value]);c.continue();};q.onerror=()=>ok(out);}catch(_){ok(out);}}),6000).catch(()=>[]);
+  let cambiato=false;
+  for(const [k,v] of voci){
+    const m=/^pre:(\/servizi\/\d{4}\/[a-z0-9_-]+)\/foglio\.json$/.exec(k);if(!m||!v||!v.j||!v.rev)continue;const c=m[1];
+    if(!(R.fogli[c]&&R.fogli[c].rev===v.rev)&&mioFoglio(v.j)){R.fogli[c]={rev:v.rev,j:soloMio(v.j,c),g:null};cambiato=true;}
+    idbSet(k,null); // usato: al prossimo aggiornamento con campo si controlla con la cartella
+  }
+  if(cambiato){salvaR();if(S&&S.dati==="reale"){S.servizi=costruisciServizi();togliCrocetteSenzaFoglio();ridisegna();}}
+  return cambiato;
 }
 // dalla 1.21: se il telefono ha già scaricato il foglio all'arrivo della notifica (sw.js), si usa quello
 async function scaricaJsonPre(path,rev){
@@ -2502,6 +2541,7 @@ async function scriviPush(extra){
   const reg=await swPronto(),sub=await reg.pushManager.getSubscription();if(!sub)throw {code:"nosub"};
   await scrivi("/telefoni/push/"+conn.p+".json",JSON.stringify(Object.assign({v:1,autista:conn.a,autistaId:MIO_ID,telefono:conn.p,sub:sub.toJSON(),pub:R.push.pub,
     domani:R.push.domani,prova:"",dispositivo:etichettaDispositivo(),at:new Date().toISOString()},extra||{})));
+  R.push.scritto=Date.now();salvaR(); // dalla 1.22
 }
 async function attivaNotifiche(){
   const msg=$("notMsg");const di=t=>{if(msg)msg.textContent=t;};
@@ -2528,8 +2568,10 @@ async function controllaPush(){
   try{
     const pub=await leggiChiavePush(false);if(!pub)return;
     const reg=await swPronto(),sub=await reg.pushManager.getSubscription();
-    if(sub&&R.push.pub===pub&&R.push.endpoint===sub.endpoint)return;
-    if(Notification.permission!=="granted"){R.push.on=false;salvaR();return;}
+    if(sub&&R.push.pub===pub&&R.push.endpoint===sub.endpoint){if(Date.now()-(Number(R.push.scritto)||0)>864e5)await scriviPush();return;} // dalla 1.22: una volta al giorno
+    if(Notification.permission!=="granted"){R.push.on=false;salvaR(); // dalla 1.22: il servizio e la Diagnostica lo sanno subito
+      try{await scrivi("/telefoni/push/"+conn.p+".json",JSON.stringify({v:1,autista:conn.a,autistaId:MIO_ID,telefono:conn.p,spento:true,motivo:"permesso tolto dal telefono",at:new Date().toISOString()}));}catch(_){}
+      return;}
     const nuova=await iscrizione(pub,R.push.pub!==pub);R.push.pub=pub;R.push.endpoint=nuova.endpoint;salvaR();await scriviPush();
   }catch(e){if(e&&e.code==="bloccato")throw e;}
 }
@@ -2666,6 +2708,7 @@ function entraReale(conScena){
   if(chiedePwAt){chiedePwAt="";aperturaAt=new Date().toISOString();telefonoScritto=false;telefonoOk=false;telefonoErr=false;} // dalla 1.20: non più ferma sulla password
   const verso=/[#&]vai=mese/.test(location.hash)?"mese":"servizi";if(verso==="mese"){try{history.replaceState(null,"",location.pathname+location.search);}catch(_){}}
   gateModo="reale";S=costruisciS();if(verso==="mese")vaiCrocette();else vai(verso);
+  usaPrescaricati().catch(()=>{}); // dalla 1.22
   const prima=aggiorna(),pronto=Promise.race([prima,new Promise(ok=>setTimeout(ok,5000))]);
   // dalla 1.13: animazione di apertura (non dopo la password: lì c'è già il pullman che parte); intanto l'app si aggiorna sotto
   const conApertura=!conScena&&(forzaApertura||serveApertura(usoPrima));segnaUso();
@@ -2689,7 +2732,7 @@ function bloccato(){
 async function accountDi(c){
   let r;
   try{r=await fetchT(DBX_API+"/oauth2/token",{method:"POST",body:new URLSearchParams({grant_type:"refresh_token",refresh_token:c.r,client_id:c.k})},30000);}catch(_){throw {code:"rete"};}
-  if(r.status===400||r.status===401)throw {code:"bloccato"};
+  if(r.status===400||r.status===401){let x="";try{x=await r.text();}catch(_){}if(/invalid_grant|invalid_client/.test(x))throw {code:"bloccato"};throw {code:"rete"};} // dalla 1.22
   if(!r.ok)throw {code:"rete"};
   let t;try{t=(await r.json()).access_token;}catch(_){throw {code:"rete"};}
   let q;try{q=await fetchT(DBX_API+"/2/users/get_current_account",{method:"POST",headers:{Authorization:"Bearer "+t,"Content-Type":"application/json"},body:"null"},30000);}catch(_){throw {code:"rete"};}

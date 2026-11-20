@@ -1,6 +1,6 @@
 # La Terra Autisti – App dell'autista
 
-**Versione 1.21** — 20 novembre 2026
+**Versione 1.22** — 20 novembre 2026
 
 Il numero di versione è scritto anche nell'app, in fondo alla pagina **Profilo**:
 serve a controllare quale versione è arrivata sul telefono dopo un aggiornamento.
@@ -28,7 +28,7 @@ Vanno caricati tutti nella radice del repository **autisti_prova** su GitHub
 | File | A cosa serve |
 |---|---|
 | `index.html` | **È l'app.** |
-| `sw.js` | Riceve le notifiche e apre l'app quando le tocchi. |
+| `sw.js` | Riceve le notifiche, apre l'app quando le tocchi e tiene sul telefono la copia dell'app (dalla 1.22 versione 1.3). |
 | `manifest.webmanifest` | Nome e icona dell'app sulla schermata Home. |
 | `icons/` | Le icone. |
 | `img/` | Dalla 1.21: il pullman La Terra delle animazioni (`bus.png`) e la sua ruota (`ruota.png`, gira davvero). |
@@ -36,10 +36,56 @@ Vanno caricati tutti nella radice del repository **autisti_prova** su GitHub
 | `README.md` | Questo file. |
 
 Dopo il caricamento: sul telefono chiudi del tutto l'app, aspetta 10 minuti e
-riaprila. In fondo al Profilo deve esserci «versione 1.21».
+riaprila. In fondo al Profilo deve esserci «versione 1.22». Dalla 1.21 i telefoni si
+aggiornano da soli con la schermata «Ehi, c'è un aggiornamento!».
 
-Questa versione va insieme al **servizio notifiche 2.0** (Cloudflare),
-all'**app Presenze 1.11** e alla **Diagnostica 1.2** (che non cambiano).
+Questa versione va insieme al **servizio notifiche 2.1** (Cloudflare),
+alla **Diagnostica 1.3** e all'**app Presenze 1.11** (che non cambia).
+
+**Regola per i numeri di versione (dalla 1.22).** Il numero va cambiato in tutti i punti
+insieme (riga 2 del file, `VERSIONE_APP`, le scritte «versione …» e `app:"…"`): se non
+coincidono l'app non si aggiorna (dalla 1.22 se ne accorge e non riprova per 24 ore). Per
+tornare a una versione precedente bisogna ricaricarla con un **numero più alto**: un
+telefono non torna mai a un numero più basso.
+
+---
+
+## Modifiche della versione 1.22 (bug-test completo)
+
+- **L'aggiornamento non blocca mai l'app.** Se il download si ferma (pullman in
+  movimento, poco campo) per 20 secondi, o dura più di due minuti e mezzo, compare
+  «Aggiornamento rimandato» e l'app si usa normalmente; riprova da sola. Prima la
+  schermata «Ehi, c'è un aggiornamento!» poteva restare per sempre sopra a tutto.
+- **Mai riavvii all'infinito.** Se una versione pubblicata ha i numeri scritti male,
+  l'app la scarica una volta, se ne accorge, resta sulla sua e non la ripropone per
+  24 ore. Prima si riavviava di continuo.
+- **Mai la versione vecchia al posto della nuova.** La copia dell'app sul telefono
+  (`sw.js` 1.3) non viene mai sostituita con una versione più vecchia; dopo un
+  aggiornamento la pagina si prende dal sito. Prima, subito dopo un aggiornamento,
+  poteva tornare la versione di prima e l'aggiornamento ripartiva.
+- **Niente file mescolati.** I file dell'aggiornamento (pullman, lettore dei PDF) si
+  scaricano tutti e solo alla fine vanno nella copia del telefono.
+- **Barra del download giusta.** Prima su GitHub arrivava subito all'88% e si fermava.
+- **Il foglio arrivato con la notifica si vede anche senza campo.** Se la notifica è
+  arrivata (il telefono ha già scaricato foglio e PDF) e l'autista apre l'app dove
+  non c'è campo, il foglio nuovo c'è subito. Prima compariva solo con il campo.
+- **Il telefono non si scollega più per un errore qualsiasi di Dropbox.** Si scollega
+  (e cancella i dati) solo quando Dropbox dice chiaramente che il collegamento è
+  bloccato dall'ufficio. Prima bastava un errore passeggero per cancellare tutto,
+  spese non ancora inviate comprese.
+- **Memoria del telefono piena.** Con tanti scontrini, dopo qualche mese la memoria
+  dell'app poteva riempirsi e da lì in poi niente veniva più salvato, senza che
+  nessuno se ne accorgesse. Ora l'app toglie da sola le miniature degli scontrini
+  delle buste già consegnate (le foto le ha l'ufficio) e, se non basta, mostra
+  «Memoria dell'app piena: avvisa l'ufficio».
+- **Notifiche: il file del telefono si riscrive una volta al giorno**, così se la
+  Diagnostica l'ha tolto o è stato rovinato torna da solo; e se l'autista toglie il
+  permesso delle notifiche, il servizio e la Diagnostica lo sanno subito.
+- **«Insieme» dopo mezzanotte.** Una fermata di carico dopo mezzanotte (partenza
+  alle 23:30, carico alle 00:15) resta una fermata di carico. Prima contava come
+  destinazione e i due autisti risultavano «non insieme».
+- Le notifiche arrivate con l'app aperta non compaiono più tra quelle «arrivate
+  mentre l'app era chiusa».
 
 ---
 

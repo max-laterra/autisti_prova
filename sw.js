@@ -1,4 +1,7 @@
-/* La Terra Autisti – service worker 1.2 (dall'app 1.21).
+/* La Terra Autisti – service worker 1.3 (dall'app 1.22).
+   Dalla 1.3: la copia dell'app non viene mai sostituita con una versione più vecchia (prima, subito dopo un aggiornamento,
+   poteva tornare la versione di prima e l'aggiornamento ripartiva); dopo un aggiornamento la pagina si prende dal sito;
+   le notifiche arrivate con l'app aperta non si ricordano come «arrivate mentre l'app era chiusa».
    - Riceve le notifiche e apre l'app quando le tocchi (come prima).
    - Tiene sul telefono una copia dell'app: si apre subito, anche senza campo, e in sottofondo si rinfresca da sola
      (al massimo una volta ogni 15 minuti). L'aggiornamento con «Ehi, c'è un aggiornamento!» lo fa l'app.
@@ -9,6 +12,16 @@
 const CACHE = "laterra-app";
 const FILE = ["index.html", "manifest.webmanifest", "img/bus.png", "img/ruota.png", "icons/icon-192.png", "icons/icon-512.png", "icons/icon-maskable-512.png", "vendor/pdf.min.mjs", "vendor/pdf.worker.min.mjs"];
 const SEGNO = /La Terra Autisti - versione \d/; // una pagina dell'app vera (non una pagina d'errore)
+const SEGNO_V = /La Terra Autisti - versione (\d+(?:\.\d+)+)/;
+const verDi = (t) => { const m = SEGNO_V.exec(String(t || "").slice(0, 4000)); return m ? m[1] : ""; };
+function piuNuova(a, b) { const x = String(a || "").split(".").map(Number), y = String(b || "").split(".").map(Number); for (let i = 0; i < Math.max(x.length, y.length); i++) { const d = (x[i] || 0) - (y[i] || 0); if (d) return d > 0; } return false; }
+// dalla 1.3: la pagina si mette nella copia solo se è valida e non più vecchia di quella che c'è già
+async function metti(c, t) {
+  if (!SEGNO.test(t)) return false;
+  const x = await c.match("index.html");
+  if (x) { const vecchia = verDi(await x.text()); if (vecchia && piuNuova(vecchia, verDi(t))) return false; }
+  await c.put("index.html", new Response(t, { headers: HTML })); return true;
+}
 const HTML = { "Content-Type": "text/html; charset=utf-8" };
 const entro = (pr, ms) => Promise.race([pr, new Promise((_, no) => setTimeout(() => no(new Error("tempo")), ms))]);
 
@@ -20,7 +33,7 @@ async function precarica() {
     try {
       if (f !== "index.html" && (await c.match(f))) return;
       const r = await fetch(new Request(f, { cache: "reload" })); if (!r.ok) return;
-      if (f === "index.html") { const t = await r.text(); if (SEGNO.test(t)) await c.put(f, new Response(t, { headers: HTML })); return; }
+      if (f === "index.html") { await metti(c, await r.text()); return; }
       await c.put(f, r);
     } catch (_) { /* senza campo: si prende al prossimo giro */ }
   }));
@@ -35,7 +48,7 @@ async function rinfresca() { // la pagina dell'app dal sito, solo se è valida (
   try {
     const r = await entro(fetch(new Request("index.html", { cache: "no-cache" })), 30000); if (!r.ok) { ultimoRinfresco = 0; return false; }
     const t = await r.text(); if (!SEGNO.test(t)) { ultimoRinfresco = 0; return false; }
-    const c = await caches.open(CACHE); await c.put("index.html", new Response(t, { headers: HTML })); return true;
+    const c = await caches.open(CACHE); return await metti(c, t);
   } catch (_) { ultimoRinfresco = 0; return false; } // senza campo: si riprova alla prossima apertura
 }
 self.addEventListener("fetch", (e) => {
@@ -46,9 +59,13 @@ self.addEventListener("fetch", (e) => {
   const rel = u.pathname.slice(base.length);
   if (req.mode === "navigate" || rel === "" || rel === "index.html") {
     e.respondWith((async () => {
-      const c = await caches.open(CACHE), x = await c.match("index.html");
+      const c = await caches.open(CACHE);
+      if (u.searchParams.has("v")) { // dalla 1.3: dopo un aggiornamento («?v=…») la pagina si prende dal sito, la copia solo se manca il campo
+        try { const r = await entro(fetch(new Request("index.html", { cache: "reload" })), 20000); if (r.ok) { const t = await r.text(); if (SEGNO.test(t)) { await metti(c, t); return new Response(t, { headers: HTML }); } } } catch (_) {}
+      }
+      const x = await c.match("index.html");
       if (x) { if (Date.now() - ultimoRinfresco > 15 * 60000) e.waitUntil(rinfresca()); return x; } // subito la copia, poi si rinfresca
-      try { const r = await fetch(req); if (r.ok) { const t = await r.clone().text(); if (SEGNO.test(t)) await c.put("index.html", new Response(t, { headers: HTML })); } return r; }
+      try { const r = await fetch(req); if (r.ok) { const t = await r.clone().text(); await metti(c, t); } return r; }
       catch (err) { return Response.error(); }
     })());
     return;
@@ -123,7 +140,10 @@ self.addEventListener("push", (e) => {
       vibrate: [250, 120, 250],
       data: { url: typeof d.url === "string" ? d.url : "./" },
     }),
-    ricorda(Object.assign({}, d, { title: titolo })).catch(() => {}),
+    (async () => { // dalla 1.3: solo se l'app non è aperta davanti
+      const aperte = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+      if (!aperte.some((c) => c.visibilityState === "visible")) await ricorda(Object.assign({}, d, { title: titolo }));
+    })().catch(() => {}),
     entro(prendiFoglio(d), 25000).catch(() => {}),
   ]));
 });
