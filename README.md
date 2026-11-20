@@ -1,6 +1,6 @@
 # La Terra Autisti – App dell'autista
 
-**Versione 1.19** — 18 novembre 2026
+**Versione 1.21** — 20 novembre 2026
 
 Il numero di versione è scritto anche nell'app, in fondo alla pagina **Profilo**:
 serve a controllare quale versione è arrivata sul telefono dopo un aggiornamento.
@@ -14,8 +14,8 @@ che si apre toccando **6 volte di fila la scritta «Profilo»** (entro 4 secondi
 Anche ogni impostazione nuova va messa lì, mai nel Profilo visibile.
 
 Nel Profilo visibile restano solo: il nome dell'autista, la riga sullo stato
-delle notifiche (senza tasti), il collegamento con l'ufficio, l'intestazione
-per la fattura ed Esci. Nella prova con i dati di esempio il Profilo resta
+delle notifiche (senza tasti), il collegamento con l'ufficio e l'intestazione
+per la fattura. Dalla 1.20 anche **«Esci» sta nella pagina nascosta**. Nella prova con i dati di esempio il Profilo resta
 com'è (con le anteprime).
 
 ---
@@ -31,14 +31,82 @@ Vanno caricati tutti nella radice del repository **autisti_prova** su GitHub
 | `sw.js` | Riceve le notifiche e apre l'app quando le tocchi. |
 | `manifest.webmanifest` | Nome e icona dell'app sulla schermata Home. |
 | `icons/` | Le icone. |
+| `img/` | Dalla 1.21: il pullman La Terra delle animazioni (`bus.png`) e la sua ruota (`ruota.png`, gira davvero). |
 | `vendor/` | La libreria che mostra i fogli di servizio in PDF (pdf.js, licenza Apache 2.0) e la licenza del carattere Archivo (SIL OFL). |
 | `README.md` | Questo file. |
 
 Dopo il caricamento: sul telefono chiudi del tutto l'app, aspetta 10 minuti e
-riaprila. In fondo al Profilo deve esserci «versione 1.19».
+riaprila. In fondo al Profilo deve esserci «versione 1.21».
 
-Questa versione va insieme al **servizio notifiche 1.12** (Cloudflare),
-all'**app Presenze 1.11** (che non cambia) e alla **Diagnostica 1.1** (che non cambia).
+Questa versione va insieme al **servizio notifiche 2.0** (Cloudflare),
+all'**app Presenze 1.11** e alla **Diagnostica 1.2** (che non cambiano).
+
+---
+
+## Modifiche della versione 1.21
+
+- **«Ehi, c'è un aggiornamento!»** Ogni volta che l'app si apre (e ogni mezz'ora
+  mentre è aperta) guarda la versione pubblicata su GitHub. Se è più nuova, appena
+  lo schermo è libero (non mentre l'autista scrive una spesa, fa una foto o guarda
+  un foglio) compare la schermata dell'aggiornamento: il pullman avanza con la
+  barra mentre la versione nuova si scarica davvero, poi «Fatto!» e l'app si
+  riavvia da sola. Dopo il riavvio: «Aggiornata! Ora hai la versione …».
+  Prima del riavvio parte quello che c'era da mandare all'ufficio. Senza campo:
+  «Aggiornamento rimandato», riprova da sola. **Si vede dal prossimo
+  aggiornamento dopo la 1.21** (la 1.21 arriva ancora nel modo di prima).
+- **Il pullman nuovo** (disegno dell'ufficio, cartella `img/`) in tutte le
+  animazioni: schermata d'ingresso, rimessa e aggiornamento, con le ruote che
+  girano davvero. Nell'animazione «insieme» il pullman resta tolto (dalla 1.16).
+  Nella rimessa, al posto della casetta a sinistra, c'è un capannone più piccolo
+  per il **lavaggio**: dentro un pullman, due spazzole blu che girano, l'acqua che
+  scende dalla barra e la schiuma (senza insegna). La scritta La Terra resta
+  sopra il capannone principale.
+- **Copia dell'app sul telefono** (file `sw.js` 1.2): l'app si apre subito,
+  anche senza campo, e in sottofondo la copia si rinfresca da sola. Su Android,
+  quando il telefono lo permette, si rinfresca anche con l'app chiusa.
+- **Il foglio arriva prima dell'app**: quando arriva la notifica di un foglio
+  nuovo o aggiornato, il telefono scarica subito il foglio e il PDF, anche con
+  l'app chiusa. Aprendo l'app il foglio è già lì e il PDF si apre subito.
+- **Novità subito all'apertura**: le notifiche arrivate con l'app chiusa si
+  vedono in un riquadro «📬 Arrivato mentre l'app era chiusa» appena si apre
+  l'app, anche prima che abbia finito di aggiornarsi.
+- **Contiene anche la 1.20** (password una volta sola, «Esci» nella pagina nascosta,
+  dati protetti), che su GitHub non era stata caricata.
+- Nient'altro cambia. Servizio notifiche: 2.0. Presenze: 1.11. Diagnostica: 1.2.
+- Prove: 22 controlli nuovi (aggiornamento da 1.21 a 1.22 con riavvio e
+  «Aggiornata!», attesa mentre una busta è aperta, aggiornamento rimandato senza
+  campo, copia dell'app e apertura senza campo, rinfresco in sottofondo, foglio
+  e PDF scaricati all'arrivo della notifica, novità, pullman nuovo), 63 con
+  l'app collegata (le 58 di prima più novità e foglio già scaricato), 36 di
+  sicurezza e 46 del giro con Presenze (compreso il pullman nella rimessa):
+  tutti superati.
+
+---
+
+## Modifiche della versione 1.20
+
+- **Password una volta sola.** Sul telefono collegato all'ufficio la casella
+  «Resta collegato su questo telefono (sempre)» è sempre spuntata e non si può
+  togliere: dopo la prima volta l'app entra direttamente, anche quando Android la
+  chiude. La password si chiede di nuovo solo dopo «Esci» o con un collegamento
+  nuovo dall'ufficio. Chi oggi è rimasto fuori la scrive una volta e poi resta
+  dentro. (Nella prova con i dati di esempio non cambia niente.)
+- **«Esci» nella pagina nascosta** (6 tocchi su «Profilo»), con la spiegazione
+  «Dopo, per rientrare serve di nuovo la password»: gli autisti non lo toccano
+  per sbaglio.
+- **Dati protetti.** All'ingresso l'app chiede al telefono di non cancellare mai
+  i suoi dati (collegamento, password, fogli, buste). È il telefono a decidere:
+  di solito accetta se l'app è sulla schermata Home e ha le notifiche attive.
+  Com'è andata si vede nella Diagnostica.
+- **La Diagnostica vede se l'app è ferma sulla password.** Quando l'app mostra
+  la schermata della password, il telefono lo scrive nel suo file
+  (`chiedePassword`, con l'ora); appena si rientra la scritta sparisce. Nel file
+  c'è anche `datiProtetti` (sì/no).
+- Nient'altro cambia. Servizio notifiche: resta la 1.12. Presenze: resta la 1.11.
+- Prove: 58 controlli (i 49 della 1.19 più 9 nuovi: «Esci» solo nella pagina
+  nascosta, spunta «Resta collegato» fissa, file del telefono con l'attesa della
+  password che compare e sparisce, nessuna password alla riapertura, dati
+  protetti), 36 di sicurezza e 45 del giro con Presenze: tutti superati.
 
 ---
 
